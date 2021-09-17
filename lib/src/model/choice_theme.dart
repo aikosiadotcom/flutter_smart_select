@@ -1,6 +1,4 @@
 import 'package:flutter/painting.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/rendering.dart';
 import 'dart:ui';
 
 /// Where to place the control in widgets that use [ListTile] to position a
@@ -25,17 +23,83 @@ enum S2ChoiceControl {
   platform,
 }
 
+/// Configure choices group header style
+class S2ChoiceHeaderStyle {
+
+  /// Group header background color
+  final Color backgroundColor;
+
+  /// Highlight color
+  final Color highlightColor;
+
+  /// Group header text style
+  final TextStyle textStyle;
+
+  /// Group header padding
+  final EdgeInsetsGeometry padding;
+
+  /// Group header height
+  final double height;
+
+  /// Create a configuration of choices group header style
+  const S2ChoiceHeaderStyle({
+    this.highlightColor,
+    this.backgroundColor = const Color(0xFFECEFF1),
+    this.textStyle = const TextStyle(color: Color(0x8A000000)),
+    this.padding = const EdgeInsets.symmetric(horizontal: 16.0),
+    this.height = 45.0,
+  });
+
+  /// Creates a copy of this [S2ChoiceHeaderStyle] but with
+  /// the given fields replaced with the new values.
+  S2ChoiceHeaderStyle copyWith({
+    Color backgroundColor,
+    Color highlightColor,
+    TextStyle textStyle,
+    EdgeInsetsGeometry padding,
+    double height,
+  }) {
+    return S2ChoiceHeaderStyle(
+      backgroundColor: backgroundColor ?? this.backgroundColor,
+      highlightColor: highlightColor ?? this.highlightColor,
+      textStyle: textStyle ?? this.textStyle,
+      padding: padding ?? this.padding,
+      height: height ?? this.height,
+    );
+  }
+
+  /// Returns a new [S2ChoiceHeaderStyle] that is
+  /// a combination of this object and the given [other] style.
+  S2ChoiceHeaderStyle merge(S2ChoiceHeaderStyle other) {
+    // if null return current object
+    if (other == null) return this;
+
+    return S2ChoiceHeaderStyle(
+      backgroundColor: other.backgroundColor,
+      highlightColor: other.highlightColor,
+      textStyle: other.textStyle,
+      padding: other.padding,
+      height: other.height,
+    );
+  }
+}
+
 /// Configure choices item style
-@immutable
-class S2ChoiceStyle with Diagnosticable {
-  /// Choices item margin
-  final EdgeInsetsGeometry margin;
+class S2ChoiceStyle {
+
+  /// How much space to place between children in a run in the main axis.
+  /// When use [SmartSelectChoiceType.chips] or [useWrap] is [true]
+  final double spacing;
+
+  /// How much space to place between the runs themselves in the cross axis.
+  /// When use [SmartSelectChoiceType.chips] or [useWrap] is [true]
+  final double runSpacing;
+
+  /// choices wrapper padding
+  final EdgeInsetsGeometry wrapperPadding;
 
   /// Choices item padding
   final EdgeInsetsGeometry padding;
-
-  /// Spacing between the avatar/secondary widget and the text widget when [S2ChoiceConfig.type] is [S2ChoiceType.cards]
-  final double spacing;
 
   /// choices item title style
   final TextStyle titleStyle;
@@ -43,60 +107,65 @@ class S2ChoiceStyle with Diagnosticable {
   /// choices item subtitle style
   final TextStyle subtitleStyle;
 
-  /// Whether the chips use checkmark or not
+  /// whether the chips use checkmark or not
   final bool showCheckmark;
-
-  /// Primary color of unselected choice item
-  final Color color;
-
-  /// Secondary color of unselected choice item
-  final Color accentColor;
-
-  /// Highlighted text color
-  final Color highlightColor;
 
   /// Where to place the control in widgets that use
   /// [ListTile] to position a control next to a label.
   final S2ChoiceControl control;
 
+  /// Highlight color
+  final Color highlightColor;
+
+  /// Primary color of selected choice item
+  final Color activeColor;
+
+  /// Primary color of unselected choice item
+  final Color color;
+
+  /// Secondary color of selected choice item
+  final Color activeAccentColor;
+
+  /// Secondary color of unselected choice item
+  final Color accentColor;
+
+  /// Brightness for selected Chip
+  final Brightness activeBrightness;
+
+  /// Brightness for unselected Chip
+  final Brightness brightness;
+
+  /// Opacity for selected Chip border, only effect when
+  /// [activeBrightness] is [Brightness.light]
+  final double activeBorderOpacity;
+
+  /// Opacity for unselected chip border, only effect when
+  /// [brightness] is [Brightness.light]
+  final double borderOpacity;
+
   /// Shape clip behavior
   final Clip clipBehavior;
 
-  /// Whether the chip is outlined or not
-  final bool outlined;
-
-  /// Whether the chip is raised or not
-  final bool raised;
-
-  /// If [raised] is [true], define the elevation of the raised chip widget
-  final double elevation;
-
-  /// If [outlined] is [true] this value becomes the border opacity, defaults to `0.3`
-  ///
-  /// If [outlined] is [false] this value becomes the background opacity, defaults to `0.12`
-  final double opacity;
-
-  /// Shape of the chip widget
-  final ShapeBorder shape;
-
   /// Create a configuration of choices item style
   const S2ChoiceStyle({
-    this.titleStyle,
-    this.subtitleStyle,
-    this.margin,
-    this.padding,
+    this.titleStyle = const TextStyle(),
+    this.subtitleStyle = const TextStyle(),
     this.spacing,
+    this.runSpacing,
+    this.wrapperPadding,
+    this.padding,
     this.showCheckmark,
-    this.color,
-    this.accentColor,
+    this.control = S2ChoiceControl.platform,
     this.highlightColor,
-    this.control,
+    this.activeColor,
+    this.color,
+    this.activeAccentColor,
+    this.accentColor,
+    this.activeBrightness = Brightness.light,
+    this.brightness = Brightness.light,
+    this.activeBorderOpacity,
+    this.borderOpacity,
     this.clipBehavior,
-    this.outlined,
-    this.raised,
-    this.opacity,
-    this.elevation,
-    this.shape,
   });
 
   /// Creates a copy of this [S2ChoiceStyle] but with
@@ -104,38 +173,42 @@ class S2ChoiceStyle with Diagnosticable {
   S2ChoiceStyle copyWith({
     TextStyle titleStyle,
     TextStyle subtitleStyle,
-    EdgeInsetsGeometry margin,
-    EdgeInsetsGeometry padding,
     double spacing,
+    double runSpacing,
+    EdgeInsetsGeometry wrapperPadding,
+    EdgeInsetsGeometry padding,
     bool showCheckmark,
     S2ChoiceControl control,
     Color highlightColor,
+    Color activeColor,
     Color color,
+    Color activeAccentColor,
     Color accentColor,
+    Brightness activeBrightness,
+    Brightness brightness,
+    double activeBorderOpacity,
+    double borderOpacity,
     Clip clipBehavior,
-    bool outlined,
-    bool raised,
-    double opacity,
-    double elevation,
-    ShapeBorder shape,
   }) {
     return S2ChoiceStyle(
-      titleStyle: this.titleStyle?.merge(titleStyle) ?? titleStyle,
-      subtitleStyle: this.subtitleStyle?.merge(subtitleStyle) ?? subtitleStyle,
-      margin: margin ?? this.margin,
-      padding: padding ?? this.padding,
+      titleStyle: titleStyle ?? this.titleStyle,
+      subtitleStyle: subtitleStyle ?? this.subtitleStyle,
       spacing: spacing ?? this.spacing,
+      runSpacing: runSpacing ?? this.runSpacing,
+      wrapperPadding: wrapperPadding ?? this.wrapperPadding,
+      padding: padding ?? this.padding,
       showCheckmark: showCheckmark ?? this.showCheckmark,
       control: control ?? this.control,
       highlightColor: highlightColor ?? this.highlightColor,
+      activeColor: activeColor ?? this.activeColor,
       color: color ?? this.color,
+      activeAccentColor: activeAccentColor ?? this.activeAccentColor,
       accentColor: accentColor ?? this.accentColor,
+      activeBrightness: activeBrightness ?? this.activeBrightness,
+      brightness: brightness ?? this.brightness,
+      activeBorderOpacity: activeBorderOpacity ?? this.activeBorderOpacity,
+      borderOpacity: borderOpacity ?? this.borderOpacity,
       clipBehavior: clipBehavior ?? this.clipBehavior,
-      outlined: outlined ?? this.outlined,
-      raised: raised ?? this.raised,
-      opacity: opacity ?? this.opacity,
-      elevation: elevation ?? this.elevation,
-      shape: shape ?? this.shape,
     );
   }
 
@@ -148,20 +221,22 @@ class S2ChoiceStyle with Diagnosticable {
     return copyWith(
       titleStyle: other.titleStyle,
       subtitleStyle: other.subtitleStyle,
-      margin: other.margin,
-      padding: other.padding,
       spacing: other.spacing,
+      runSpacing: other.runSpacing,
+      wrapperPadding: other.wrapperPadding,
+      padding: other.padding,
       showCheckmark: other.showCheckmark,
       control: other.control,
       highlightColor: other.highlightColor,
+      activeColor: other.activeColor,
       color: other.color,
+      activeAccentColor: other.activeAccentColor,
       accentColor: other.accentColor,
+      activeBrightness: other.activeBrightness,
+      brightness: other.brightness,
+      activeBorderOpacity: other.activeBorderOpacity,
+      borderOpacity: other.borderOpacity,
       clipBehavior: other.clipBehavior,
-      outlined: other.outlined,
-      raised: other.raised,
-      opacity: other.opacity,
-      elevation: other.elevation,
-      shape: other.shape,
     );
   }
 }

@@ -1,5 +1,4 @@
 import 'dart:ui';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import './modal_theme.dart';
 
@@ -7,17 +6,15 @@ import './modal_theme.dart';
 enum S2ModalType {
   /// open in full page
   fullPage,
-
   /// open in popup dialog
   popupDialog,
-
   /// open in sliding bottom sheet
   bottomSheet,
 }
 
 /// Modal configuration
-@immutable
-class S2ModalConfig with Diagnosticable {
+class S2ModalConfig {
+
   /// Modal type to display choices
   final S2ModalType type;
 
@@ -58,17 +55,14 @@ class S2ModalConfig with Diagnosticable {
   /// The filter autocomplete delay
   final Duration filterDelay;
 
-  /// If [type] is [S2ModalType.bottomSheet], specifies the max height factor, the value must be between `0` and` 1`
-  final double maxHeightFactor;
-
   /// If [type] is [S2ModalType.bottomSheet], specifies whether the bottom sheet can be dragged up and down and dismissed by swiping downwards.
   final bool enableDrag;
 
-  /// The [barrierDismissible] argument is used to indicate whether tapping on the
+  /// The `barrierDismissible` argument is used to indicate whether tapping on the
   /// barrier will dismiss the dialog. It is `true` by default and can not be `null`.
   final bool barrierDismissible;
 
-  /// The [barrierColor] argument is used to specify the color of the modal
+  /// The `barrierColor` argument is used to specify the color of the modal
   /// barrier that darkens everything the dialog. If `null` the default color
   /// `Colors.black54` is used.
   final Color barrierColor;
@@ -94,38 +88,26 @@ class S2ModalConfig with Diagnosticable {
     this.filterAuto = false,
     this.filterDelay = const Duration(milliseconds: 300),
     this.filterHint,
-    this.maxHeightFactor = 0.6,
     this.enableDrag = true,
     this.barrierDismissible = true,
     this.barrierColor,
     this.style = const S2ModalStyle(),
     this.headerStyle = const S2ModalHeaderStyle(),
-  })  : assert(useHeader != null),
-        assert(useConfirm != null),
-        assert(useFilter != null),
-        assert(filterAuto != null),
-        assert(enableDrag != null),
-        assert(barrierDismissible != null),
-        assert(confirmBrightness != null),
-        assert(maxHeightFactor != null),
-        assert(maxHeightFactor > 0 && maxHeightFactor <= 1),
-        assert(style != null),
-        assert(headerStyle != null);
+  }) :
+    assert(useHeader != null),
+    assert(useConfirm != null),
+    assert(useFilter != null),
+    assert(filterAuto != null),
+    assert(enableDrag != null),
+    assert(barrierDismissible != null),
+    assert(confirmBrightness != null),
+    assert(style != null),
+    assert(headerStyle != null);
 
-  /// Returns true if the modal type is full page
-  bool get isFullPage => type == S2ModalType.fullPage;
-
-  /// Returns true if the modal type is bottom sheet
-  bool get isBottomSheet => type == S2ModalType.bottomSheet;
-
-  /// Returns true if the modal type is popup dialog
-  bool get isPopupDialog => type == S2ModalType.popupDialog;
-
-  /// Returns true if the confirm button brightness is dark
-  bool get confirmIsDark => confirmBrightness == Brightness.dark;
-
-  /// Returns true if the confirm button brightness is light
-  bool get confirmIsLight => confirmBrightness == Brightness.light;
+  /// whether the modal is full page or not
+  bool get isFullPage {
+    return type == S2ModalType.fullPage;
+  }
 
   /// Creates a copy of this [S2ModalConfig] but with
   /// the given fields replaced with the new values.
@@ -143,7 +125,6 @@ class S2ModalConfig with Diagnosticable {
     bool filterAuto,
     Duration filterDelay,
     String filterHint,
-    double maxHeightFactor,
     bool enableDrag,
     bool barrierDismissible,
     Color barrierColor,
@@ -164,12 +145,11 @@ class S2ModalConfig with Diagnosticable {
       filterAuto: filterAuto ?? this.filterAuto,
       filterDelay: filterDelay ?? this.filterDelay,
       filterHint: filterHint ?? this.filterHint,
-      maxHeightFactor: maxHeightFactor ?? this.maxHeightFactor,
       enableDrag: enableDrag ?? this.enableDrag,
       barrierDismissible: barrierDismissible ?? this.barrierDismissible,
       barrierColor: barrierColor ?? this.barrierColor,
-      style: this.style?.merge(style) ?? style,
-      headerStyle: this.headerStyle?.merge(headerStyle) ?? headerStyle,
+      style: style ?? this.style,
+      headerStyle: headerStyle ?? this.headerStyle,
     );
   }
 
@@ -187,13 +167,12 @@ class S2ModalConfig with Diagnosticable {
       confirmIcon: other.confirmIcon,
       confirmLabel: other.confirmLabel,
       confirmColor: other.confirmColor,
-      confirmMargin: other.confirmMargin,
+      confirmMargin: confirmMargin,
       confirmBrightness: other.confirmBrightness,
       useFilter: other.useFilter,
       filterAuto: other.filterAuto,
       filterDelay: other.filterDelay,
       filterHint: other.filterHint,
-      maxHeightFactor: other.maxHeightFactor,
       enableDrag: other.enableDrag,
       barrierDismissible: other.barrierDismissible,
       barrierColor: other.barrierColor,

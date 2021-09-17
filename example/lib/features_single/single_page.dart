@@ -8,6 +8,7 @@ class FeaturesSinglePage extends StatefulWidget {
 }
 
 class _FeaturesSinglePageState extends State<FeaturesSinglePage> {
+
   String _day = 'fri';
   String _month = 'apr';
 
@@ -18,16 +19,16 @@ class _FeaturesSinglePageState extends State<FeaturesSinglePage> {
         const SizedBox(height: 7),
         SmartSelect<String>.single(
           title: 'Days',
-          selectedValue: _day,
+          value: _day,
           choiceItems: choices.days,
-          onChange: (selected) => setState(() => _day = selected.value),
+          onChange: (state) => setState(() => _day = state.value),
         ),
         const Divider(indent: 20),
         SmartSelect<String>.single(
           title: 'Month',
-          selectedValue: _month,
+          value: _month,
           choiceItems: choices.months,
-          onChange: (selected) => setState(() => _month = selected.value),
+          onChange: (state) => setState(() => _month = state.value),
         ),
         const SizedBox(height: 7),
       ],

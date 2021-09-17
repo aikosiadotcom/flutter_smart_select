@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import '../chip_theme.dart';
 
 /// Chips tile/trigger widget
 class S2TileChips extends StatelessWidget {
+
   /// List of value of the selected choices.
   final int chipLength;
 
@@ -18,20 +18,19 @@ class S2TileChips extends StatelessWidget {
   /// Called when the user delete the chip item.
   final ValueChanged<int> chipOnDelete;
 
-  /// The primary color of the chip item
+  /// Chip color
   final Color chipColor;
 
-  /// Whether the chip is outlined or not
-  final bool chipOutlined;
+  /// Chip border opacity
+  final double chipBorderOpacity;
 
-  /// Whether the chip is raised or not
-  final bool chipRaised;
+  /// Chip brightness
+  final Brightness chipBrightness;
 
-  /// If [chipOutlined] is [true] this value becomes the border opacity,
-  /// If [chipOutlined] is [false] this value becomes the background opacity
-  final double chipOpacity;
+  /// Chip delete button color
+  final Color chipDeleteColor;
 
-  /// The icon of the delete button
+  /// Chip delete button icon
   final Icon chipDeleteIcon;
 
   /// Chip spacing
@@ -42,12 +41,6 @@ class S2TileChips extends StatelessWidget {
 
   /// Chip shape border
   final ShapeBorder chipShape;
-
-  /// The [TextStyle] of the chip label
-  final TextStyle chipLabelStyle;
-
-  /// The elevation of the chip widget
-  final double chipElevation;
 
   /// The [Widget] displayed when the [values] is null
   final Widget placeholder;
@@ -66,58 +59,46 @@ class S2TileChips extends StatelessWidget {
     this.chipAvatarBuilder,
     this.chipBuilder,
     this.chipOnDelete,
-    this.chipColor,
-    this.chipOutlined = false,
-    this.chipRaised = false,
-    this.chipOpacity,
+    this.chipColor = Colors.black87,
+    this.chipBorderOpacity,
+    this.chipBrightness,
+    this.chipDeleteColor,
     this.chipDeleteIcon,
     this.chipSpacing,
     this.chipRunSpacing,
     this.chipShape,
-    this.chipLabelStyle,
-    this.chipElevation = 1,
     this.placeholder,
     this.scrollable = false,
     this.padding,
-  })  : assert(chipOutlined != null),
-        assert(chipRaised != null),
-        assert(scrollable != null),
-        super(key: key);
+  }) : super(key: key);
 
   /// default padding
-  static const EdgeInsetsGeometry defaultPadding =
-      EdgeInsets.fromLTRB(15, 0, 15, 10);
+  static EdgeInsetsGeometry defaultPadding = const EdgeInsets.fromLTRB(15, 0, 15, 10);
 
   /// default placeholder
-  static final Widget defaultPlaceholder = Container();
+  static Widget defaultPlaceholder = Container();
+
+  /// chip is dark brightness
+  bool get chipIsDark => chipBrightness == Brightness.dark;
 
   @override
   Widget build(BuildContext context) {
     return chipLength > 0
-        ? scrollable
-            ? _chipScrollable(context)
-            : _chipWrapped(context)
-        : placeholder ?? defaultPlaceholder;
+      ? scrollable
+        ? _chipScrollable(context)
+        : _chipWrapped(context)
+      : placeholder ?? defaultPlaceholder;
   }
 
   Widget _chipWrapped(BuildContext context) {
-    return S2ChipTheme(
-      color: chipColor,
-      outlined: chipOutlined,
-      raised: chipRaised,
-      elevation: chipElevation,
-      opacity: chipOpacity,
-      shape: chipShape,
-      labelStyle: chipLabelStyle,
-      child: Padding(
-        padding: padding ?? defaultPadding,
-        child: Wrap(
-          runAlignment: WrapAlignment.start,
-          alignment: WrapAlignment.start,
-          spacing: chipSpacing ?? 7,
-          runSpacing: chipRunSpacing ?? -5,
-          children: _chipList(context),
-        ),
+    return Padding(
+      padding: padding ?? defaultPadding,
+      child: Wrap(
+        runAlignment: WrapAlignment.start,
+        alignment: WrapAlignment.start,
+        spacing: chipSpacing ?? 7,
+        runSpacing: chipRunSpacing ?? -5,
+        children: _chipList(context),
       ),
     );
   }
@@ -144,14 +125,13 @@ class S2TileChips extends StatelessWidget {
       chipLength,
       (i) {
         // build chip widget
-        Widget _chip =
-            chipBuilder?.call(context, i) ?? _chipGenerator(context, i);
+        Widget _chip = chipBuilder?.call(context, i) ?? _chipGenerator(context, i);
 
         // add spacing if chip is scrollable
         if (scrollable) {
           _chip = Padding(
             padding: EdgeInsets.only(
-              right: i < chipLength - 1 ? chipSpacing ?? 7 : 0,
+              right: i < chipLength - 1 ? chipSpacing ?? 7 : 0
             ),
             child: _chip,
           );
@@ -165,9 +145,23 @@ class S2TileChips extends StatelessWidget {
   Widget _chipGenerator(BuildContext context, int i) {
     return Chip(
       label: chipLabelBuilder?.call(context, i),
+      labelStyle: TextStyle(
+        color: chipIsDark ? Colors.white : chipColor
+      ),
       avatar: chipAvatarBuilder?.call(context, i),
+      backgroundColor: chipIsDark ? chipColor : Colors.white,
+      deleteIconColor: chipDeleteColor ?? chipIsDark ? Colors.white : chipColor,
       deleteIcon: chipDeleteIcon,
-      onDeleted: chipOnDelete != null ? () => chipOnDelete(i) : null,
+      shape: chipShape ?? StadiumBorder(
+        side: BorderSide(
+          color: chipIsDark
+            ? chipColor
+            : chipColor.withOpacity(chipBorderOpacity ?? .1),
+        ),
+      ),
+      onDeleted: chipOnDelete != null
+        ? () => chipOnDelete(i)
+        : null,
     );
   }
 }

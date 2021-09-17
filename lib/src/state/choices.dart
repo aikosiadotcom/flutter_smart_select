@@ -1,199 +1,110 @@
-import 'package:flutter/foundation.dart';
-import '../model/choice_item.dart';
-import '../model/choice_loader.dart';
-import '../model/group_data.dart';
-import '../model/group_config.dart';
+// import 'dart:async';
+// import 'package:flutter/foundation.dart';
+// import '../model/choice_item.dart';
 
-/// Type of what the choice state can do
-enum S2ChoicesTask {
-  /// indicates the choices try to loading items at the first time
-  init,
+// class S2Choices<T> extends ChangeNotifier {
 
-  /// indicates the choices try to refreshing items
-  reload,
+//   final List<S2Choice<T>> predefined;
 
-  /// indicates the choices try to appending items
-  append,
-}
+//   final S2ChoiceLoader<T> loader;
 
-/// State of the choices data
-class S2Choices<T> extends ChangeNotifier {
-  /// A function used to load choice items
-  final S2ChoiceLoader<T> loader;
+//   final Duration delay;
 
-  /// The initial choice items
-  final List<S2Choice<T>> preload;
+//   final bool grouped;
 
-  /// Delay
-  final Duration delay;
+//   final int limit;
 
-  /// The choice items limit per page
-  final int limit;
+//   int page = 1;
 
-  /// Current page number
-  int page = 1;
+//   List<S2Choice<T>> items;
 
-  /// Current choice items
-  List<S2Choice<T>> items;
+//   String query;
 
-  /// Current status of this
-  S2ChoicesTask task;
+//   bool refreshing = false;
 
-  /// Error message occurs while loading the choice items
-  Error error;
+//   bool appending = false;
 
-  /// Default constructor
-  S2Choices({
-    List<S2Choice<T>> items,
-    this.loader,
-    this.delay,
-    this.limit,
-  }) : this.preload = items;
+//   S2Choices({
+//     this.predefined,
+//     this.loader,
+//     this.grouped = false,
+//     this.delay = const Duration(milliseconds: 200),
+//     this.limit,
+//   });
 
-  /// Returns values of the choice items
-  List<T> get values {
-    return items?.map((S2Choice<T> choice) => choice.value)?.toList();
-  }
+//   bool get initializing => refreshing && items == null;
 
-  /// Returns length of the choice items
-  int get length => items?.length ?? 0;
+//   void refresh({ String query, bool init = false }) async {
+//     if (refreshing != true) {
+//       refreshing = true;
+//       if (init == true) items = null;
+//       page = 1;
+//       notifyListeners();
+//       try {
+//         List<S2Choice<T>> res = await find(S2ChoiceLoaderInfo<T>(query: query));
+//         items = List.from(res);
+//         page = 2;
+//       } catch (e) {
+//         throw e;
+//       } finally {
+//         Timer(delay, () {
+//           refreshing = false;
+//           notifyListeners();
+//         });
+//       }
+//     }
+//   }
 
-  /// Returns `true` if the choice state is idle
-  bool get isIdle => task == null;
+//   void append({ String query }) async {
+//     if (appending != true) {
+//       appending = true;
+//       notifyListeners();
+//       try {
+//         List<S2Choice<T>> res = await find(S2ChoiceLoaderInfo<T>(query: query));
+//         items.addAll(res);
+//         page += 1;
+//       } catch (e) {
+//         throw e;
+//       } finally {
+//         Timer(delay, () {
+//           appending = false;
+//           notifyListeners();
+//         });
+//       }
+//     }
+//   }
 
-  /// Returns `true` if the choice state is busy
-  bool get isBusy => task != null;
+//   // return a list of options
+//   Future<List<S2Choice<T>>> find(S2ChoiceLoaderInfo<T> info) async {
+//     return loader != null
+//       ? _hide(await loader(info))
+//       : _filter(_hide(predefined), info.query);
+//   }
 
-  /// Returns `true` if the choice state is initializing
-  bool get isInitializing => task == S2ChoicesTask.init;
+//   // return a sorted list of group keys
+//   List<String> get groups {
+//     if (!grouped) return <String>[];
 
-  /// Returns `true` if the choice state is refreshing choice items
-  bool get isReloading => task == S2ChoicesTask.reload;
+//     Set groups = Set();
+//     items.forEach((S2Choice<T> item) => groups.add(item.group));
 
-  /// Returns `true` if the choice state is adding more choice items
-  bool get isAppending => task == S2ChoicesTask.append;
+//     return groups
+//       .toList()
+//       .cast<String>()
+//       ..sort((a, b) => a.toLowerCase().compareTo(b.toLowerCase()));
+//   }
 
-  /// Returns `true` if there are no item in the choice items
-  bool get isEmpty => items == null || items?.isEmpty == true;
+//   // filter option items
+//   List<S2Choice<T>> _filter(List<S2Choice<T>> items, String query) {
+//     return query != null
+//       ? items
+//           .where((S2Choice<T> item) => item.contains(query))
+//           .toList().cast<S2Choice<T>>()
+//       : items;
+//   }
 
-  /// Returns `true` if there is at least one item in the choices items
-  bool get isNotEmpty => items != null && items?.isNotEmpty == true;
-
-  /// Returns `true` if [choice] and [value] is not `null`
-  bool get isPreloaded => preload != null;
-
-  /// Returns `true` if [loader] is `null`
-  bool get isSync => loader == null;
-
-  /// Returns `true` if [loader] is not `null`
-  bool get isAsync => loader != null;
-
-  /// Function to initialize choice state
-  void initialize() {
-    load(S2ChoicesTask.init);
-  }
-
-  /// Function to refresh the choice items
-  void reload({String query}) {
-    load(S2ChoicesTask.reload, query: query);
-  }
-
-  /// Function to add more items to choice items
-  void append({String query}) {
-    load(S2ChoicesTask.append, query: query);
-  }
-
-  /// Function to load choice items
-  void load(S2ChoicesTask _task, {String query}) async {
-    assert(_task != null);
-
-    // skip the loader if the status busy
-    if (isBusy) return null;
-
-    final bool isInitializing = _task == S2ChoicesTask.init;
-    final bool isAppending = _task == S2ChoicesTask.append;
-
-    // skip the loader if the items already filled
-    if (isInitializing && isNotEmpty) return null;
-
-    task = _task;
-    page = isAppending ? page + 1 : 1;
-    notifyListeners();
-
-    try {
-      final List<S2Choice<T>> choices = await find(S2ChoiceLoaderInfo<T>(
-        page: page,
-        limit: limit,
-        query: query,
-      ));
-      if (isAppending) {
-        items.addAll(choices);
-      } else {
-        items = List.from(choices);
-      }
-    } catch (e) {
-      if (isAppending) page--;
-      error = e;
-    } finally {
-      await Future.delayed(delay ?? const Duration(milliseconds: 300), () {
-        task = null;
-        notifyListeners();
-      });
-    }
-  }
-
-  /// Returns a list of options
-  Future<List<S2Choice<T>>> find(S2ChoiceLoaderInfo<T> info) async {
-    return isAsync
-        ? hide(await loader(info))
-        : filter(hide(preload), info.query);
-  }
-
-  /// Filter choice items by search text
-  List<S2Choice<T>> filter(List<S2Choice<T>> choices, String query) {
-    return query != null
-        ? choices
-            .where((S2Choice<T> choice) => choice.contains(query))
-            .toList()
-            .cast<S2Choice<T>>()
-        : choices;
-  }
-
-  /// Removes hidden choice items
-  List<S2Choice<T>> hide(List<S2Choice<T>> choices) {
-    return choices..removeWhere((S2Choice<T> choice) => choice.hidden == true);
-  }
-
-  /// Returns a list of group
-  List<S2Group<T>> groupItems(S2GroupConfig config) {
-    if (groupKeys?.isEmpty == true) return null;
-
-    final List<S2Group<T>> groups = groupKeys
-        .map((String groupKey) => S2Group<T>(
-              name: groupKey,
-              choices: groupChoices(groupKey),
-              headerStyle: config.headerStyle,
-            ))
-        .toList()
-        .cast<S2Group<T>>();
-
-    // sort the list when the comparator is provided
-    if (config.sortBy != null) return groups..sort(config.sortBy.compare);
-
-    return groups;
-  }
-
-  /// Returns a unique list of group keys
-  List<String> get groupKeys {
-    return items
-        .map((S2Choice<T> choice) => choice.group)
-        .toSet()
-        .toList()
-        .cast<String>();
-  }
-
-  /// Returns a list of group choice items
-  List<S2Choice<T>> groupChoices(String key) {
-    return items.where((S2Choice<T> choice) => choice.group == key).toList();
-  }
-}
+//   // remove hidden choice items
+//   List<S2Choice<T>> _hide(List<S2Choice<T>> items) {
+//     return items..removeWhere((S2Choice<T> item) => item.hidden == true);
+//   }
+// }

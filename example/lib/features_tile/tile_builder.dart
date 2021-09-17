@@ -8,18 +8,10 @@ class FeaturesTileBuilder extends StatefulWidget {
 }
 
 class _FeaturesTileBuilderState extends State<FeaturesTileBuilder> {
-  List<String> _cars = [
-    'bmw-x2',
-    'bmw-x1',
-    'honda-hrv',
-    'honda-jazz',
-    'hyundai-i10',
-    'bmw-sgt'
-  ];
+
+  List<String> _cars = ['bmw-x2', 'bmw-x1', 'honda-hrv', 'honda-jazz', 'hyundai-i10', 'bmw-sgt'];
   List<String> _categories = [];
   String _sort = 'popular';
-
-  Color get primaryColor => Theme.of(context).primaryColor;
 
   @override
   Widget build(BuildContext context) {
@@ -39,11 +31,9 @@ class _FeaturesTileBuilderState extends State<FeaturesTileBuilder> {
                 Expanded(
                   child: SmartSelect<String>.multiple(
                     title: 'Categories',
-                    selectedValue: _categories,
+                    value: _categories,
                     choiceItems: choices.categories,
-                    onChange: (selected) {
-                      setState(() => _categories = selected.value);
-                    },
+                    onChange: (state) => setState(() => _categories = state.value),
                     modalType: S2ModalType.bottomSheet,
                     modalHeader: false,
                     tileBuilder: (context, state) {
@@ -62,11 +52,9 @@ class _FeaturesTileBuilderState extends State<FeaturesTileBuilder> {
                 Expanded(
                   child: SmartSelect<String>.single(
                     title: 'Sort By',
-                    selectedValue: _sort,
+                    value: _sort,
                     choiceItems: choices.sorts,
-                    onChange: (selected) {
-                      setState(() => _sort = selected.value);
-                    },
+                    onChange: (state) => setState(() => _sort = state.value),
                     modalType: S2ModalType.popupDialog,
                     modalHeader: false,
                     tileBuilder: (context, state) {
@@ -83,14 +71,14 @@ class _FeaturesTileBuilderState extends State<FeaturesTileBuilder> {
           ),
           SmartSelect<String>.multiple(
             title: 'Cars',
-            selectedValue: _cars,
+            value: _cars,
             choiceItems: S2Choice.listFrom<String, Map>(
               source: choices.cars,
               value: (index, item) => item['value'],
               title: (index, item) => item['title'],
               group: (index, item) => item['body'],
             ),
-            onChange: (selected) => setState(() => _cars = selected.value),
+            onChange: (state) => setState(() => _cars = state.value),
             modalType: S2ModalType.bottomSheet,
             modalConfirm: true,
             modalFilter: true,
@@ -108,17 +96,15 @@ class _FeaturesTileBuilderState extends State<FeaturesTileBuilder> {
                   title: const Text('Cars'),
                   trailing: const Icon(Icons.add_circle_outline),
                   body: S2TileChips(
-                    chipLength: state.selected.length,
+                    chipLength: state.valueObject.length,
                     chipLabelBuilder: (context, i) {
-                      return Text(state.selected.choice[i].title);
+                      return Text(state.valueObject[i].title);
                     },
                     chipOnDelete: (i) {
-                      setState(() {
-                        _cars.remove(state.selected.choice[i].value);
-                      });
+                      setState(() => _cars.remove(state.valueObject[i].value));
                     },
-                    chipColor: primaryColor,
-                    chipRaised: true,
+                    chipColor: Colors.red,
+                    chipBrightness: Brightness.dark,
                   ),
                 ),
               );

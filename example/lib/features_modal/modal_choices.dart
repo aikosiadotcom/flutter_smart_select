@@ -8,6 +8,7 @@ class FeaturesModalChoices extends StatefulWidget {
 }
 
 class _FeaturesModalChoicesState extends State<FeaturesModalChoices> {
+
   List<String> _fruit = ['mel'];
   List<String> _hero = ['bat', 'spi'];
 
@@ -18,8 +19,8 @@ class _FeaturesModalChoicesState extends State<FeaturesModalChoices> {
         const SizedBox(height: 7),
         SmartSelect<String>.multiple(
           title: 'Fruit',
-          selectedValue: _fruit,
-          onChange: (selected) => setState(() => _fruit = selected.value),
+          value: _fruit,
+          onChange: (state) => setState(() => _fruit = state.value),
           choiceItems: choices.fruits,
           modalType: S2ModalType.popupDialog,
           modalHeader: false,
@@ -33,27 +34,26 @@ class _FeaturesModalChoicesState extends State<FeaturesModalChoices> {
                 child: const Icon(Icons.shopping_cart),
               ),
             );
-          },
+          }
         ),
         const Divider(indent: 20),
         SmartSelect<String>.multiple(
-            title: 'Super Hero',
-            selectedValue: _hero,
-            onChange: (selected) => setState(() => _hero = selected.value),
-            choiceItems: choices.heroes,
-            modalType: S2ModalType.bottomSheet,
-            modalHeader: false,
-            tileBuilder: (context, state) {
-              return S2Tile.fromState(
-                state,
-                isTwoLine: true,
-                leading: const CircleAvatar(
-                  backgroundImage: NetworkImage(
-                    'https://source.unsplash.com/8I-ht65iRww/100x100',
-                  ),
-                ),
-              );
-            }),
+          title: 'Super Hero',
+          value: _hero,
+          onChange: (state) => setState(() => _hero = state.value),
+          choiceItems: choices.heroes,
+          modalType: S2ModalType.bottomSheet,
+          modalHeader: false,
+          tileBuilder: (context, state) {
+            return S2Tile.fromState(
+              state,
+              isTwoLine: true,
+              leading: const CircleAvatar(
+                backgroundImage: NetworkImage('https://source.unsplash.com/8I-ht65iRww/100x100'),
+              ),
+            );
+          }
+        ),
         const SizedBox(height: 7),
       ],
     );

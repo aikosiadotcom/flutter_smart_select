@@ -9,10 +9,9 @@ class FeaturesChoicesGrouped extends StatefulWidget {
 }
 
 class _FeaturesChoicesGroupedState extends State<FeaturesChoicesGrouped> {
+
   String _smartphone = '';
   List<String> _car = [];
-
-  Color get primaryColor => Theme.of(context).primaryColor;
 
   @override
   Widget build(BuildContext context) {
@@ -22,67 +21,65 @@ class _FeaturesChoicesGroupedState extends State<FeaturesChoicesGrouped> {
         SmartSelect<String>.single(
           title: 'Smartphones',
           placeholder: 'Choose one',
-          selectedValue: _smartphone,
-          onChange: (selected) {
-            setState(() => _smartphone = selected.value);
-          },
+          value: _smartphone,
+          onChange: (state) => setState(() => _smartphone = state.value),
           choiceItems: S2Choice.listFrom<String, Map>(
             source: choices.smartphones,
             value: (index, item) => item['id'],
             title: (index, item) => item['name'],
             group: (index, item) => item['brand'],
           ),
-          groupEnabled: true,
-          groupSortBy: S2GroupSort.byCountInDesc(),
+          choiceGrouped: true,
           modalType: S2ModalType.bottomSheet,
           tileBuilder: (context, state) {
             return S2Tile(
               title: state.titleWidget,
-              value: state.selected.toWidget(),
+              value: state.valueDisplay,
               onTap: state.showModal,
               isTwoLine: true,
               leading: const CircleAvatar(
-                backgroundImage: NetworkImage(
-                  'https://source.unsplash.com/xsGxhtAsfSA/100x100',
-                ),
+                backgroundImage: NetworkImage('https://source.unsplash.com/xsGxhtAsfSA/100x100'),
               ),
             );
-          },
+          }
         ),
         const Divider(indent: 20),
         SmartSelect<String>.multiple(
           title: 'Cars',
           placeholder: 'Choose one or more',
-          selectedValue: _car,
-          onChange: (selected) => setState(() => _car = selected.value),
+          value: _car,
+          onChange: (state) => setState(() => _car = state.value),
           choiceItems: S2Choice.listFrom<String, Map>(
             source: choices.cars,
             value: (index, item) => item['value'],
             title: (index, item) => item['title'],
             group: (index, item) => item['body'],
           ),
-          choiceActiveStyle: const S2ChoiceStyle(color: Colors.redAccent),
+          choiceGrouped: true,
+          choiceStyle: const S2ChoiceStyle(
+            activeColor: Colors.redAccent
+          ),
           modalType: S2ModalType.bottomSheet,
           modalConfirm: true,
           modalFilter: true,
-          groupEnabled: true,
-          groupSortBy: S2GroupSort.byNameInAsc(),
-          groupBuilder: (context, state, group) {
+          choiceGroupBuilder: (context, header, choices) {
             return StickyHeader(
-              header: state.groupHeader(group),
-              content: state.groupChoices(group),
+              header: header,
+              content: choices,
             );
           },
-          groupHeaderBuilder: (context, state, group) {
+          choiceHeaderBuilder: (context, group, searchText) {
             return Container(
-              color: primaryColor,
+              color: Colors.redAccent,
               padding: const EdgeInsets.all(15),
               alignment: Alignment.centerLeft,
               child: S2Text(
                 text: group.name,
-                highlight: state.filter.value,
+                highlight: searchText,
                 highlightColor: Colors.teal,
-                style: const TextStyle(color: Colors.white),
+                style: const TextStyle(
+                  color: Colors.white
+                ),
               ),
             );
           },
@@ -91,12 +88,10 @@ class _FeaturesChoicesGroupedState extends State<FeaturesChoicesGrouped> {
               state,
               isTwoLine: true,
               leading: const CircleAvatar(
-                backgroundImage: NetworkImage(
-                  'https://source.unsplash.com/yeVtxxPxzbw/100x100',
-                ),
+                backgroundImage: NetworkImage('https://source.unsplash.com/yeVtxxPxzbw/100x100'),
               ),
             );
-          },
+          }
         ),
         const SizedBox(height: 7),
       ],

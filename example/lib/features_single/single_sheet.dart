@@ -8,6 +8,7 @@ class FeaturesSingleSheet extends StatefulWidget {
 }
 
 class _FeaturesSingleSheetState extends State<FeaturesSingleSheet> {
+
   String _os = 'win';
   String _hero = 'iro';
 
@@ -18,18 +19,16 @@ class _FeaturesSingleSheetState extends State<FeaturesSingleSheet> {
         const SizedBox(height: 7),
         SmartSelect<String>.single(
           title: 'OS',
-          selectedValue: _os,
+          value: _os,
           choiceItems: choices.os,
-          onChange: (selected) => setState(() => _os = selected.value),
+          onChange: (state) => setState(() => _os = state.value),
           modalType: S2ModalType.bottomSheet,
           tileBuilder: (context, state) {
             return S2Tile.fromState(
               state,
               isTwoLine: true,
               leading: const CircleAvatar(
-                backgroundImage: NetworkImage(
-                  'https://source.unsplash.com/xsGxhtAsfSA/100x100',
-                ),
+                backgroundImage: NetworkImage('https://source.unsplash.com/xsGxhtAsfSA/100x100'),
               ),
             );
           },
@@ -37,18 +36,16 @@ class _FeaturesSingleSheetState extends State<FeaturesSingleSheet> {
         const Divider(indent: 20),
         SmartSelect<String>.single(
           title: 'Super Hero',
-          selectedValue: _hero,
+          value: _hero,
           choiceItems: choices.heroes,
           modalType: S2ModalType.bottomSheet,
-          onChange: (selected) => setState(() => _hero = selected.value),
+          onChange: (state) => setState(() => _hero = state.value),
           tileBuilder: (context, state) {
             return S2Tile.fromState(
               state,
               isTwoLine: true,
               leading: const CircleAvatar(
-                backgroundImage: NetworkImage(
-                  'https://source.unsplash.com/8I-ht65iRww/100x100',
-                ),
+                backgroundImage: NetworkImage('https://source.unsplash.com/8I-ht65iRww/100x100'),
               ),
             );
           },

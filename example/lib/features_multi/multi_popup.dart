@@ -8,6 +8,7 @@ class FeaturesMultiPopup extends StatefulWidget {
 }
 
 class _FeaturesMultiPopupState extends State<FeaturesMultiPopup> {
+
   List<String> _fruit = ['mel'];
   List<String> _framework = ['flu'];
 
@@ -18,8 +19,8 @@ class _FeaturesMultiPopupState extends State<FeaturesMultiPopup> {
         const SizedBox(height: 7),
         SmartSelect<String>.multiple(
           title: 'Fruit',
-          selectedValue: _fruit,
-          onChange: (selected) => setState(() => _fruit = selected.value),
+          value: _fruit,
+          onChange: (state) => setState(() => _fruit = state.value),
           choiceItems: choices.fruits,
           modalType: S2ModalType.popupDialog,
           tileBuilder: (context, state) {
@@ -37,32 +38,27 @@ class _FeaturesMultiPopupState extends State<FeaturesMultiPopup> {
         const Divider(indent: 20),
         SmartSelect<String>.multiple(
           title: 'Frameworks',
-          selectedValue: _framework,
-          onChange: (selected) {
-            setState(() => _framework = selected.value);
-          },
+          value: _framework,
+          onChange: (state) => setState(() => _framework = state.value),
           choiceItems: choices.frameworks,
           modalType: S2ModalType.popupDialog,
           tileBuilder: (context, state) {
             return ListTile(
               title: Text(state.title),
               subtitle: Text(
-                state.selected.toString(),
+                state.valueDisplay,
                 style: const TextStyle(color: Colors.grey),
                 overflow: TextOverflow.ellipsis,
                 maxLines: 1,
               ),
               leading: CircleAvatar(
-                backgroundColor: Theme.of(context).primaryColor,
+                backgroundColor: Colors.blue,
                 child: Text(
-                  state.selected.length.toString(),
-                  style: TextStyle(color: Colors.white),
+                  _framework.length.toString(),
+                  style: TextStyle(color: Colors.white)
                 ),
               ),
-              trailing: const Icon(
-                Icons.keyboard_arrow_right,
-                color: Colors.grey,
-              ),
+              trailing: const Icon(Icons.keyboard_arrow_right, color: Colors.grey),
               onTap: state.showModal,
             );
           },

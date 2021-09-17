@@ -8,6 +8,7 @@ class FeaturesMultiSheet extends StatefulWidget {
 }
 
 class _FeaturesMultiSheetState extends State<FeaturesMultiSheet> {
+
   List<String> _os = ['and', 'tux'];
   List<String> _hero = ['bat', 'spi'];
 
@@ -18,8 +19,8 @@ class _FeaturesMultiSheetState extends State<FeaturesMultiSheet> {
         const SizedBox(height: 7),
         SmartSelect<String>.multiple(
           title: 'OS',
-          selectedValue: _os,
-          onChange: (selected) => setState(() => _os = selected.value),
+          value: _os,
+          onChange: (state) => setState(() => _os = state.value),
           choiceItems: choices.os,
           modalType: S2ModalType.bottomSheet,
           tileBuilder: (context, state) {
@@ -27,9 +28,7 @@ class _FeaturesMultiSheetState extends State<FeaturesMultiSheet> {
               state,
               isTwoLine: true,
               leading: const CircleAvatar(
-                backgroundImage: NetworkImage(
-                  'https://source.unsplash.com/xsGxhtAsfSA/100x100',
-                ),
+                backgroundImage: NetworkImage('https://source.unsplash.com/xsGxhtAsfSA/100x100'),
               ),
             );
           },
@@ -37,8 +36,8 @@ class _FeaturesMultiSheetState extends State<FeaturesMultiSheet> {
         const Divider(indent: 20),
         SmartSelect<String>.multiple(
           title: 'Super Hero',
-          selectedValue: _hero,
-          onChange: (selected) => setState(() => _hero = selected.value),
+          value: _hero,
+          onChange: (state) => setState(() => _hero = state.value),
           choiceItems: choices.heroes,
           modalType: S2ModalType.bottomSheet,
           tileBuilder: (context, state) {
@@ -46,9 +45,7 @@ class _FeaturesMultiSheetState extends State<FeaturesMultiSheet> {
               state,
               isTwoLine: true,
               leading: const CircleAvatar(
-                backgroundImage: NetworkImage(
-                  'https://source.unsplash.com/8I-ht65iRww/100x100',
-                ),
+                backgroundImage: NetworkImage('https://source.unsplash.com/8I-ht65iRww/100x100'),
               ),
             );
           },

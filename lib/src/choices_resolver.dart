@@ -3,181 +3,186 @@ import 'model/builder.dart';
 import 'model/choice_config.dart';
 import 'model/choice_theme.dart';
 import 'model/choice_item.dart';
-import 'chip_theme.dart';
+import 'text.dart';
 
-/// Resolve the choice builder based on choice type
+/// resolve the choice builder based on choice type
 class S2ChoiceResolver<T> {
-  /// Whether single or multiple choice
+
+  /// whether single or multiple choice
   final bool isMultiChoice;
 
-  /// The choice type
+  /// the choice type
   final S2ChoiceType type;
 
-  /// Function to build the title widget
-  final Widget Function(S2Choice<T>) titleBuilder;
+  /// the choice style
+  final S2ChoiceStyle style;
 
-  /// Function to build the subtitle widget
-  final Widget Function(S2Choice<T>) subtitleBuilder;
+  /// the collection of available builder widget
+  final S2Builder<T> builder;
 
-  /// Function to build the secondary widget
-  final Widget Function(S2Choice<T>) secondaryBuilder;
-
-  /// Default constructor
+  /// default constructor
   S2ChoiceResolver({
     @required this.isMultiChoice,
     @required this.type,
-    @required this.titleBuilder,
-    @required this.secondaryBuilder,
-    @required this.subtitleBuilder,
+    @required this.style,
+    @required this.builder,
   });
 
-  /// Returns the correct builder based on choice type
-  S2WidgetBuilder<S2Choice<T>> get choiceBuilder {
-    return type == S2ChoiceType.checkboxes
-        ? checkboxBuilder
-        : type == S2ChoiceType.switches
-            ? switchBuilder
-            : type == S2ChoiceType.chips
-                ? chipBuilder
-                : type == S2ChoiceType.radios
-                    ? radioBuilder
-                    : type == S2ChoiceType.cards
-                        ? cardBuilder
-                        : null;
+  /// get the choice builder
+  S2ChoiceBuilder<T> get choiceBuilder {
+    return builder.choice ?? defaultChoiceBuilder;
   }
 
-  /// Returns the radio choice widget
-  Widget radioBuilder(
+  /// get correct builder based on choice type
+  S2ChoiceBuilder<T> get defaultChoiceBuilder {
+    return type == S2ChoiceType.checkboxes
+      ? checkboxBuilder
+      : type == S2ChoiceType.switches
+        ? switchBuilder
+        : type == S2ChoiceType.chips
+          ? chipBuilder
+          : type == S2ChoiceType.radios
+            ? radioBuilder
+            : null;
+  }
+
+  /// get radio builder
+  S2ChoiceBuilder<T> get radioBuilder => (
     BuildContext context,
     S2Choice<T> choice,
-  ) =>
-      RadioListTile<T>(
-        key: ValueKey(choice.value),
-        title: titleBuilder(choice),
-        subtitle: subtitleBuilder(choice),
-        secondary: secondaryBuilder(choice),
-        activeColor: choice.activeStyle.color,
-        controlAffinity: ListTileControlAffinity
-            .values[choice.effectiveStyle.control?.index ?? 2],
-        onChanged:
-            choice.disabled != true ? (val) => choice.select(true) : null,
+    String searchText,
+  ) => RadioListTile(
+        title: getTitle(context, choice, searchText),
+        subtitle: getSubtitle(context, choice, searchText),
+        secondary: getSecondary(context, choice, searchText),
+        activeColor: style.activeColor,
+        controlAffinity: ListTileControlAffinity.values[style.control?.index ?? 2],
+        onChanged: choice.disabled != true ? (val) => choice.select(true) : null,
         groupValue: choice.selected == true ? choice.value : null,
         value: choice.value,
       );
 
-  /// Returns the switch choice widget
-  Widget switchBuilder(
+  /// get switch builder
+  S2ChoiceBuilder<T> get switchBuilder => (
     BuildContext context,
     S2Choice<T> choice,
-  ) =>
-      SwitchListTile(
-        key: ValueKey(choice.value),
-        title: titleBuilder(choice),
-        subtitle: subtitleBuilder(choice),
-        secondary: secondaryBuilder(choice),
-        activeColor: choice.activeStyle.accentColor ?? choice.activeStyle.color,
-        activeTrackColor: choice.activeStyle.color?.withAlpha(0x80),
-        inactiveThumbColor: choice.style.accentColor,
-        inactiveTrackColor: choice.style.color?.withAlpha(0x80),
-        contentPadding: choice.effectiveStyle.padding,
-        controlAffinity: ListTileControlAffinity
-            .values[choice.effectiveStyle.control?.index ?? 2],
+    String searchText,
+  ) => SwitchListTile(
+        title: getTitle(context, choice, searchText),
+        subtitle: getSubtitle(context, choice, searchText),
+        secondary: getSecondary(context, choice, searchText),
+        activeColor: style.activeAccentColor ?? style.activeColor,
+        activeTrackColor: style.activeColor?.withAlpha(0x80),
+        inactiveThumbColor: style.accentColor,
+        inactiveTrackColor: style.color?.withAlpha(0x80),
         onChanged: choice.disabled != true
-            ? (selected) => choice.select(selected)
-            : null,
+          ? (selected) => choice.select(selected)
+          : null,
         value: choice.selected,
       );
 
-  /// Returns the checkbox choice widget
-  Widget checkboxBuilder(
+  /// get checkbox builder
+  S2ChoiceBuilder<T> get checkboxBuilder => (
     BuildContext context,
     S2Choice<T> choice,
-  ) =>
-      CheckboxListTile(
-        key: ValueKey(choice.value),
-        title: titleBuilder(choice),
-        subtitle: subtitleBuilder(choice),
-        secondary: secondaryBuilder(choice),
-        activeColor: choice.activeStyle.color,
-        contentPadding: choice.effectiveStyle.padding,
-        controlAffinity: ListTileControlAffinity
-            .values[choice.effectiveStyle.control?.index ?? 2],
+    String searchText,
+  ) => CheckboxListTile(
+        title: getTitle(context, choice, searchText),
+        subtitle: getSubtitle(context, choice, searchText),
+        secondary: getSecondary(context, choice, searchText),
+        activeColor: style.activeColor,
+        controlAffinity: ListTileControlAffinity.values[style.control?.index ?? 2],
         onChanged: choice.disabled != true
-            ? (selected) => choice.select(selected)
-            : null,
+          ? (selected) => choice.select(selected)
+          : null,
         value: choice.selected,
       );
 
-  /// Returns the chip choice widget
-  Widget chipBuilder(
+  /// get chip builder
+  S2ChoiceBuilder<T> get chipBuilder => (
     BuildContext context,
     S2Choice<T> choice,
+    String searchText,
   ) {
-    final S2ChoiceStyle effectiveStyle = choice.effectiveStyle;
+    final bool isDark = choice.selected
+      ? style.activeBrightness == Brightness.dark
+      : style.brightness == Brightness.dark;
 
-    return S2ChipTheme(
-      color: effectiveStyle.color,
-      outlined: effectiveStyle.outlined,
-      raised: effectiveStyle.raised,
-      elevation: effectiveStyle.elevation,
-      opacity: effectiveStyle.elevation,
-      shape: effectiveStyle.shape,
-      labelStyle: effectiveStyle.titleStyle,
-      selected: choice.selected,
-      child: Padding(
-        padding: effectiveStyle?.margin ?? const EdgeInsets.all(0),
-        child: RawChip(
-          key: ValueKey(choice.value),
-          padding: effectiveStyle?.padding ?? const EdgeInsets.all(4),
-          label: titleBuilder(choice),
-          avatar: secondaryBuilder(choice),
-          clipBehavior: effectiveStyle?.clipBehavior ?? Clip.none,
-          showCheckmark: effectiveStyle?.showCheckmark ?? isMultiChoice,
-          isEnabled: choice.disabled != true,
-          onSelected: (selected) => choice.select(selected),
-          selected: choice.selected,
-        ),
+    final Color textColor = isDark
+      ? Colors.white
+      : choice.selected ? style.activeColor : style.color;
+
+    final Color borderColor = isDark
+      ? Colors.transparent
+      : choice.selected
+        ? (style.activeAccentColor ?? style.activeColor)?.withOpacity(style.activeBorderOpacity ?? .2)
+        : (style.accentColor ?? style.color)?.withOpacity(style.borderOpacity ?? .2);
+
+    final Color checkmarkColor = isDark
+      ? textColor
+      : style.activeColor;
+
+    final Color backgroundColor = isDark
+      ? style.color
+      : Colors.transparent;
+
+    final Color selectedBackgroundColor = isDark
+      ? style.activeColor
+      : Colors.transparent;
+
+    return FilterChip(
+      label: getTitle(context, choice, searchText),
+      avatar: getSecondary(context, choice, searchText),
+      shape: StadiumBorder(
+        side: BorderSide(color: borderColor),
       ),
+      labelStyle: TextStyle(
+        color: textColor
+      ),
+      clipBehavior: style.clipBehavior ?? Clip.none,
+      showCheckmark: style.showCheckmark ?? isMultiChoice ? true : false,
+      checkmarkColor: checkmarkColor,
+      shadowColor: style.color,
+      selectedShadowColor: style.activeColor,
+      backgroundColor: backgroundColor,
+      selectedColor: selectedBackgroundColor,
+      onSelected: choice.disabled != true
+        ? (selected) => choice.select(selected)
+        : null,
+      selected: choice.selected,
     );
+  };
+
+  /// build title widget
+  Widget getTitle(BuildContext context, S2Choice<T> choice, String searchText) {
+    return choice.title != null
+    ? builder.choiceTitle != null
+      ? builder.choiceTitle(context, choice, searchText)
+      : S2Text(
+          text: choice.title,
+          style: style.titleStyle,
+          highlight: searchText,
+          highlightColor: style.highlightColor ?? Colors.yellow.withOpacity(.7),
+        )
+    : null;
   }
 
-  /// Returns the card choice widget
-  Widget cardBuilder(
-    BuildContext context,
-    S2Choice<T> choice,
-  ) {
-    final Color backgroundColor = choice.selected
-        ? choice.activeStyle.color ?? Theme.of(context).primaryColor
-        : choice.style.color ?? Theme.of(context).cardColor;
-    final Brightness backgroundBrightness =
-        ThemeData.estimateBrightnessForColor(backgroundColor);
-    final Color defaultTextColor =
-        backgroundBrightness == Brightness.dark ? Colors.white : Colors.black;
+  /// build subtitle widget
+  Widget getSubtitle(BuildContext context, S2Choice<T> choice, String searchText) {
+    return choice.subtitle != null
+      ? builder.choiceSubtitle != null
+        ? builder.choiceSubtitle(context, choice, searchText)
+        : S2Text(
+            text: choice.subtitle,
+            style: style.subtitleStyle,
+            highlight: searchText,
+            highlightColor: style.highlightColor ?? Colors.yellow.withOpacity(.7),
+          )
+      : null;
+  }
 
-    return Card(
-      elevation: choice.effectiveStyle.elevation,
-      margin: choice.effectiveStyle.margin ?? const EdgeInsets.all(5),
-      color: backgroundColor,
-      child: InkWell(
-        onTap: () => choice.select(!choice.selected),
-        child: Padding(
-          padding: choice.effectiveStyle.padding ?? const EdgeInsets.all(10),
-          child: DefaultTextStyle.merge(
-            textAlign: TextAlign.center,
-            style: TextStyle(color: defaultTextColor),
-            child: Column(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                secondaryBuilder(choice),
-                SizedBox(height: choice.effectiveStyle.spacing ?? 10),
-                titleBuilder(choice),
-              ]..removeWhere((e) => e == null),
-            ),
-          ),
-        ),
-      ),
-    );
+  /// build secondary/avatar widget
+  Widget getSecondary(BuildContext context, S2Choice<T> choice, String searchText) {
+    return builder.choiceSecondary?.call(context, choice, searchText);
   }
 }

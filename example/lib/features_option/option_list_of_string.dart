@@ -3,31 +3,23 @@ import 'package:smart_select/smart_select.dart';
 
 class FeaturesOptionListOfString extends StatefulWidget {
   @override
-  _FeaturesOptionListOfStringState createState() =>
-      _FeaturesOptionListOfStringState();
+  _FeaturesOptionListOfStringState createState() => _FeaturesOptionListOfStringState();
 }
 
-class _FeaturesOptionListOfStringState
-    extends State<FeaturesOptionListOfString> {
+class _FeaturesOptionListOfStringState extends State<FeaturesOptionListOfString> {
+
   List<int> _categories = [];
 
   int _sort = 3;
 
   List<String> _categoriesOption = [
-    'Electronics',
-    'Accessories',
-    'Smartwatch',
-    'Smartphone',
-    'Audio & Video',
-    'Scientific'
+    'Electronics', 'Accessories', 'Smartwatch',
+    'Smartphone', 'Audio & Video', 'Scientific'
   ];
 
   List<String> _sortOption = [
-    'Popular',
-    'Most Reviews',
-    'Newest',
-    'Low Price',
-    'High Price',
+    'Popular', 'Most Reviews', 'Newest',
+    'Low Price', 'High Price',
   ];
 
   @override
@@ -46,10 +38,8 @@ class _FeaturesOptionListOfStringState
               Expanded(
                 child: SmartSelect<int>.multiple(
                   title: 'Categories',
-                  selectedValue: _categories,
-                  onChange: (selected) {
-                    setState(() => _categories = selected.value);
-                  },
+                  value: _categories,
+                  onChange: (state) => setState(() => _categories = state.value),
                   choiceItems: S2Choice.listFrom<int, String>(
                     source: _categoriesOption,
                     value: (index, item) => index,
@@ -74,10 +64,8 @@ class _FeaturesOptionListOfStringState
               Expanded(
                 child: SmartSelect<int>.single(
                   title: 'Sort By',
-                  selectedValue: _sort,
-                  onChange: (selected) {
-                    setState(() => _sort = selected.value);
-                  },
+                  value: _sort,
+                  onChange: (state) => setState(() => _sort = state.value),
                   choiceItems: S2Choice.listFrom<int, String>(
                     source: _sortOption,
                     value: (index, item) => index,

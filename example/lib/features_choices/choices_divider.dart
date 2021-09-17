@@ -8,6 +8,7 @@ class FeaturesChoicesDivider extends StatefulWidget {
 }
 
 class _FeaturesChoicesDividerState extends State<FeaturesChoicesDivider> {
+
   String _car = '';
   List<String> _smartphone = [];
 
@@ -19,8 +20,8 @@ class _FeaturesChoicesDividerState extends State<FeaturesChoicesDivider> {
         SmartSelect<String>.single(
           title: 'Car',
           placeholder: 'Choose one',
-          selectedValue: _car,
-          onChange: (selected) => setState(() => _car = selected.value),
+          value: _car,
+          onChange: (state) => setState(() => _car = state.value),
           choiceItems: S2Choice.listFrom<String, Map>(
             source: choices.cars,
             value: (index, item) => item['value'],
@@ -34,21 +35,17 @@ class _FeaturesChoicesDividerState extends State<FeaturesChoicesDivider> {
               state,
               isTwoLine: true,
               leading: const CircleAvatar(
-                backgroundImage: NetworkImage(
-                  'https://source.unsplash.com/yeVtxxPxzbw/100x100',
-                ),
+                backgroundImage: NetworkImage('https://source.unsplash.com/yeVtxxPxzbw/100x100'),
               ),
             );
-          },
+          }
         ),
         const Divider(indent: 20),
         SmartSelect<String>.multiple(
           title: 'Smartphones',
           placeholder: 'Choose one',
-          selectedValue: _smartphone,
-          onChange: (selected) {
-            setState(() => _smartphone = selected.value);
-          },
+          value: _smartphone,
+          onChange: (state) => setState(() => _smartphone = state.value),
           choiceItems: S2Choice.listFrom<String, Map>(
             source: choices.smartphones,
             value: (index, item) => item['id'],
@@ -66,12 +63,10 @@ class _FeaturesChoicesDividerState extends State<FeaturesChoicesDivider> {
               state,
               isTwoLine: true,
               leading: const CircleAvatar(
-                backgroundImage: NetworkImage(
-                  'https://source.unsplash.com/xsGxhtAsfSA/100x100',
-                ),
+                backgroundImage: NetworkImage('https://source.unsplash.com/xsGxhtAsfSA/100x100'),
               ),
             );
-          },
+          }
         ),
         const SizedBox(height: 7),
       ],

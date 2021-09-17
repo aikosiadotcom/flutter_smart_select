@@ -1,13 +1,61 @@
 import 'package:flutter/foundation.dart';
 import 'package:smart_select/src/utils/accent.dart';
-import 'choice_theme.dart';
 
-/// Validation callback
-typedef String S2Validation<T>(T value);
+// typedef Future<List<S2Choice<T>>> S2ChoiceLoader<T>(
+//   S2ChoiceLoaderInfo<T> info
+// );
 
-/// Choice data configuration
-@immutable
-class S2Choice<T> with Diagnosticable {
+// class S2ChoiceLoaderInfo<T> {
+//   final T value;
+//   final List<T> values;
+//   final String query;
+//   final int page;
+//   final int limit;
+
+//   S2ChoiceLoaderInfo({
+//     this.value,
+//     this.values,
+//     this.query,
+//     this.page,
+//     this.limit,
+//   });
+
+//   /// Creates a copy of this [S2ChoiceLoaderInfo] but with
+//   /// the given fields replaced with the new values.
+//   S2ChoiceLoaderInfo<T> copyWith({
+//     T value,
+//     List<T> values,
+//     String query,
+//     int page,
+//     int limit,
+//   }) {
+//     return S2ChoiceLoaderInfo<T>(
+//       value: value ?? this.value,
+//       values: values ?? this.values,
+//       query: query ?? this.query,
+//       page: page ?? this.page,
+//       limit: limit ?? this.limit,
+//     );
+//   }
+
+//   /// Creates a copy of this [S2ChoiceLoaderInfo] but with
+//   /// the given fields replaced with the new values.
+//   S2ChoiceLoaderInfo<T> merge(S2ChoiceLoaderInfo<T> other) {
+//     // if null return current object
+//     if (other == null) return this;
+
+//     return copyWith(
+//       value: other.value,
+//       values: other.values,
+//       query: other.query,
+//       page: other.page,
+//       limit: other.limit,
+//     );
+//   }
+// }
+
+/// Choice option configuration
+class S2Choice<T> {
   /// Value to return
   final T value;
 
@@ -17,26 +65,20 @@ class S2Choice<T> with Diagnosticable {
   /// Represent as secondary text
   final String subtitle;
 
-  /// The choice will grouped by this property value
+  /// The option will grouped by this property value
   final String group;
 
-  /// Whether the choice is disabled or enabled
+  /// Whether the option is disabled or enabled
   final bool disabled;
 
-  /// Whether the choice is displayed or not
+  /// Whether the option is displayed or not
   final bool hidden;
 
   /// This prop is useful for choice builder
   final dynamic meta;
 
-  /// Individual unselected choice item style
-  final S2ChoiceStyle style;
-
-  /// Individual selected choice item style
-  final S2ChoiceStyle activeStyle;
-
   /// Callback to select choice
-  final ValueSetter<bool> select;
+  final Function(bool selected) select;
 
   /// Whether the choice is selected or not
   final bool selected;
@@ -50,8 +92,6 @@ class S2Choice<T> with Diagnosticable {
     this.disabled = false,
     this.hidden = false,
     this.meta,
-    this.style,
-    this.activeStyle,
     this.select,
     this.selected = false,
   })  : assert(disabled != null),
@@ -67,8 +107,6 @@ class S2Choice<T> with Diagnosticable {
     _S2OptionProp<E, bool> disabled,
     _S2OptionProp<E, bool> hidden,
     _S2OptionProp<E, dynamic> meta,
-    _S2OptionProp<E, S2ChoiceStyle> style,
-    _S2OptionProp<E, S2ChoiceStyle> activeStyle,
   }) =>
       source
           .asMap()
@@ -82,8 +120,6 @@ class S2Choice<T> with Diagnosticable {
                 disabled: disabled?.call(index, item) ?? false,
                 hidden: hidden?.call(index, item) ?? false,
                 meta: meta?.call(index, item),
-                style: style?.call(index, item),
-                activeStyle: activeStyle?.call(index, item),
               )))
           .values
           .toList();
@@ -108,8 +144,6 @@ class S2Choice<T> with Diagnosticable {
   @override
   int get hashCode => value.hashCode;
 
-  S2ChoiceStyle get effectiveStyle => selected == true ? activeStyle : style;
-
   /// Creates a copy of this [S2Choice] but with
   /// the given fields replaced with the new values.
   S2Choice<T> copyWith({
@@ -120,9 +154,7 @@ class S2Choice<T> with Diagnosticable {
     bool disabled,
     bool hidden,
     dynamic meta,
-    S2ChoiceStyle style,
-    S2ChoiceStyle activeStyle,
-    ValueSetter<bool> select,
+    Function(bool selected) select,
     bool selected,
   }) {
     return S2Choice<T>(
@@ -133,8 +165,6 @@ class S2Choice<T> with Diagnosticable {
       disabled: disabled ?? this.disabled,
       hidden: hidden ?? this.hidden,
       meta: meta ?? this.meta,
-      style: style ?? this.style,
-      activeStyle: activeStyle ?? this.activeStyle,
       select: select ?? this.select,
       selected: selected ?? this.selected,
     );
@@ -154,8 +184,6 @@ class S2Choice<T> with Diagnosticable {
       disabled: other.disabled,
       hidden: other.hidden,
       meta: other.meta,
-      style: other.style,
-      activeStyle: other.activeStyle,
       select: other.select,
       selected: other.selected,
     );

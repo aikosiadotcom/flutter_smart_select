@@ -8,6 +8,7 @@ class FeaturesModalConfirm extends StatefulWidget {
 }
 
 class _FeaturesModalConfirmState extends State<FeaturesModalConfirm> {
+
   List<String> _day = ['fri'];
   List<String> _fruit = ['mel'];
   String _hero = 'iro';
@@ -19,39 +20,32 @@ class _FeaturesModalConfirmState extends State<FeaturesModalConfirm> {
         const SizedBox(height: 7),
         SmartSelect<String>.multiple(
           title: 'Days',
-          selectedValue: _day,
-          onChange: (selected) => setState(() => _day = selected.value),
+          value: _day,
+          onChange: (state) => setState(() => _day = state.value),
           choiceItems: choices.days,
           modalType: S2ModalType.fullPage,
           modalConfirm: true,
           tileBuilder: (context, state) {
             return S2Tile(
               title: state.titleWidget,
-              value: state.selected.toWidget(),
+              value: state.valueDisplay,
               onTap: state.showModal,
               isTwoLine: true,
               leading: const CircleAvatar(
-                backgroundImage: NetworkImage(
-                  'https://source.unsplash.com/xsGxhtAsfSA/100x100',
-                ),
+                backgroundImage: NetworkImage('https://source.unsplash.com/xsGxhtAsfSA/100x100'),
               ),
             );
-          },
+          }
         ),
         const Divider(indent: 20),
         SmartSelect<String>.multiple(
           title: 'Fruit',
-          selectedValue: _fruit,
-          onChange: (selected) => setState(() => _fruit = selected.value),
+          value: _fruit,
+          onChange: (state) => setState(() => _fruit = state.value),
           choiceItems: choices.fruits,
           modalType: S2ModalType.popupDialog,
           modalConfirm: true,
-          modalValidation: (value) {
-            return value.length > 0 ? null : 'Select at least one';
-          },
-          modalHeaderStyle: S2ModalHeaderStyle(
-            backgroundColor: Theme.of(context).cardColor,
-          ),
+          modalValidation: (value) => value.length > 0 ? null : 'Select at least one',
           tileBuilder: (context, state) {
             return S2Tile.fromState(
               state,
@@ -84,44 +78,46 @@ class _FeaturesModalConfirmState extends State<FeaturesModalConfirm> {
                   ),
                   const SizedBox(width: 5),
                   FlatButton(
-                    child: Text('OK (${state.selection.length})'),
-                    color: Theme.of(context).primaryColor,
+                    child: Text('OK (${state.changes.length})'),
+                    color: Colors.blue,
                     textColor: Colors.white,
-                    onPressed: state.selection.isValid
-                        ? () => state.closeModal(confirmed: true)
-                        : null,
+                    onPressed: state.changes.valid
+                      ? () => state.closeModal(confirmed: true)
+                      : null,
                   ),
                 ],
               ),
             );
-          },
+          }
         ),
         const Divider(indent: 20),
         SmartSelect<String>.single(
           title: 'Super Hero',
-          selectedValue: _hero,
-          onChange: (selected) => setState(() => _hero = selected.value),
+          value: _hero,
+          onChange: (state) => setState(() => _hero = state.value),
           choiceItems: choices.heroes,
-          choiceActiveStyle: const S2ChoiceStyle(color: Colors.redAccent),
+          choiceStyle: const S2ChoiceStyle(
+            activeColor: Colors.redAccent
+          ),
           modalType: S2ModalType.bottomSheet,
-          modalValidation: (selected) {
-            if (selected == null) return 'Select at least one';
-            if (selected.value == 'iro') return 'Ironman is busy';
+          modalValidation: (value) {
+            if (value.length == 0) return 'Select at least one';
+            if (value == 'iro') return 'Ironman is busy';
             return null;
           },
           modalConfig: S2ModalConfig(
             useConfirm: true,
             confirmLabel: const Text('Send'),
-            confirmIcon: const Icon(Icons.send),
+            // confirmIcon: const Icon(Icons.send),
+            confirmColor: Colors.redAccent,
+            confirmBrightness: Brightness.dark
           ),
           tileBuilder: (context, state) {
             return S2Tile.fromState(
               state,
               isTwoLine: true,
               leading: const CircleAvatar(
-                backgroundImage: NetworkImage(
-                  'https://source.unsplash.com/8I-ht65iRww/100x100',
-                ),
+                backgroundImage: NetworkImage('https://source.unsplash.com/8I-ht65iRww/100x100'),
               ),
             );
           },

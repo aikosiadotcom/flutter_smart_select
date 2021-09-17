@@ -8,6 +8,7 @@ class FeaturesModalShape extends StatefulWidget {
 }
 
 class _FeaturesModalShapeState extends State<FeaturesModalShape> {
+
   String _framework = 'flu';
   List<String> _hero = ['bat', 'spi'];
 
@@ -18,10 +19,8 @@ class _FeaturesModalShapeState extends State<FeaturesModalShape> {
         const SizedBox(height: 7),
         SmartSelect<String>.single(
           title: 'Frameworks',
-          selectedValue: _framework,
-          onChange: (selected) {
-            setState(() => _framework = selected.value);
-          },
+          value: _framework,
+          onChange: (state) => setState(() => _framework = state.value),
           choiceType: S2ChoiceType.radios,
           choiceItems: choices.frameworks,
           modalType: S2ModalType.popupDialog,
@@ -30,7 +29,7 @@ class _FeaturesModalShapeState extends State<FeaturesModalShape> {
             style: S2ModalStyle(
               elevation: 3,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(20.0)),
+                borderRadius: BorderRadius.all(Radius.circular(20.0))
               ),
             ),
           ),
@@ -39,29 +38,31 @@ class _FeaturesModalShapeState extends State<FeaturesModalShape> {
               state,
               isTwoLine: true,
               leading: CircleAvatar(
+                backgroundColor: Colors.blue,
                 child: Text(
-                  '${state.selected.toString()[0]}',
-                  style: TextStyle(color: Colors.white),
+                  '${state.valueDisplay[0]}',
+                  style: TextStyle(color: Colors.white)
                 ),
               ),
             );
-          },
+          }
         ),
         Divider(indent: 20),
         SmartSelect<String>.multiple(
           title: 'Super Hero',
-          selectedValue: _hero,
-          onChange: (selected) => setState(() => _hero = selected.value),
+          value: _hero,
+          onChange: (state) => setState(() => _hero = state.value),
           choiceItems: choices.heroes,
           choiceType: S2ChoiceType.switches,
           modalType: S2ModalType.bottomSheet,
           modalConfig: const S2ModalConfig(
             style: S2ModalStyle(
+              backgroundColor: Colors.white,
               clipBehavior: Clip.antiAlias,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(15.0),
-                  topRight: Radius.circular(15.0),
+                  topRight: Radius.circular(15.0)
                 ),
               ),
             ),
@@ -74,12 +75,10 @@ class _FeaturesModalShapeState extends State<FeaturesModalShape> {
               state,
               isTwoLine: true,
               leading: const CircleAvatar(
-                backgroundImage: NetworkImage(
-                  'https://source.unsplash.com/8I-ht65iRww/100x100',
-                ),
+                backgroundImage: NetworkImage('https://source.unsplash.com/8I-ht65iRww/100x100'),
               ),
             );
-          },
+          }
         ),
         const SizedBox(height: 7),
       ],

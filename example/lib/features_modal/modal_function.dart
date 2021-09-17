@@ -7,6 +7,7 @@ class ProgrammaticModal extends StatefulWidget {
 }
 
 class _ProgrammaticModalState extends State<ProgrammaticModal> {
+
   List<S2Choice<String>> _choices = [
     S2Choice<String>(value: 'app', title: 'Apple'),
     S2Choice<String>(value: 'ore', title: 'Orange'),
@@ -14,16 +15,13 @@ class _ProgrammaticModalState extends State<ProgrammaticModal> {
   ];
 
   List<String> _value;
-  GlobalKey<S2MultiState<String>> _smartSelectKey =
-      GlobalKey<S2MultiState<String>>();
+  GlobalKey<S2MultiState<String>> _smartSelectKey = GlobalKey<S2MultiState<String>>();
 
   @override
   void initState() {
     super.initState();
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _smartSelectKey.currentState.showModal();
-    });
+    WidgetsBinding.instance.addPostFrameCallback((_) => _smartSelectKey.currentState.showModal());
   }
 
   @override
@@ -31,12 +29,12 @@ class _ProgrammaticModalState extends State<ProgrammaticModal> {
     return SmartSelect<String>.multiple(
       key: _smartSelectKey,
       title: 'Fruit',
-      selectedValue: _value,
-      onChange: (selected) => setState(() => _value = selected.value),
+      value: _value,
+      onChange: (state) => setState(() => _value = state.value),
       choiceItems: _choices,
       tileBuilder: (context, state) {
         return Container();
-      },
+      }
     );
   }
 }

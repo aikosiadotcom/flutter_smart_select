@@ -8,6 +8,7 @@ class FeaturesSinglePopup extends StatefulWidget {
 }
 
 class _FeaturesSinglePopupState extends State<FeaturesSinglePopup> {
+
   String _fruit = 'mel';
   String _framework = 'flu';
 
@@ -18,9 +19,9 @@ class _FeaturesSinglePopupState extends State<FeaturesSinglePopup> {
         const SizedBox(height: 7),
         SmartSelect<String>.single(
           title: 'Fruit',
-          selectedValue: _fruit,
+          value: _fruit,
           choiceItems: choices.fruits,
-          onChange: (selected) => setState(() => _fruit = selected.value),
+          onChange: (state) => setState(() => _fruit = state.value),
           modalType: S2ModalType.popupDialog,
           tileBuilder: (context, state) {
             return S2Tile.fromState(
@@ -32,31 +33,27 @@ class _FeaturesSinglePopupState extends State<FeaturesSinglePopup> {
         const Divider(indent: 20),
         SmartSelect<String>.single(
           title: 'Frameworks',
-          selectedValue: _framework,
+          value: _framework,
           choiceItems: choices.frameworks,
           modalType: S2ModalType.popupDialog,
-          onChange: (selected) {
-            setState(() => _framework = selected.value);
-          },
+          onChange: (state) => setState(() => _framework = state.value),
           tileBuilder: (context, state) {
             return ListTile(
               title: Text(state.title),
               subtitle: Text(
-                state.selected.toString(),
+                state.valueDisplay,
+                style: TextStyle(color: Colors.grey),
                 overflow: TextOverflow.ellipsis,
                 maxLines: 1,
               ),
               leading: CircleAvatar(
-                backgroundColor: Theme.of(context).primaryColor,
+                backgroundColor: Colors.blue,
                 child: Text(
-                  '${state.selected.toString()[0]}',
-                  style: TextStyle(color: Colors.white),
+                  '${state.valueDisplay[0]}',
+                  style: TextStyle(color: Colors.white)
                 ),
               ),
-              trailing: const Icon(
-                Icons.keyboard_arrow_right,
-                color: Colors.grey,
-              ),
+              trailing: const Icon(Icons.keyboard_arrow_right, color: Colors.grey),
               onTap: state.showModal,
             );
           },

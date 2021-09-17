@@ -8,6 +8,7 @@ class FeaturesMultiChips extends StatefulWidget {
 }
 
 class _FeaturesMultiChipsState extends State<FeaturesMultiChips> {
+
   List<String> _car = [];
   List<String> _smartphone = [];
   List<String> _day = ['fri'];
@@ -19,8 +20,8 @@ class _FeaturesMultiChipsState extends State<FeaturesMultiChips> {
         const SizedBox(height: 7),
         SmartSelect<String>.multiple(
           title: 'Car',
-          selectedValue: _car,
-          onChange: (selected) => setState(() => _car = selected.value),
+          value: _car,
+          onChange: (state) => setState(() => _car = state.value),
           choiceItems: S2Choice.listFrom<String, Map>(
             source: choices.cars,
             value: (index, item) => item['value'],
@@ -35,9 +36,7 @@ class _FeaturesMultiChipsState extends State<FeaturesMultiChips> {
               state,
               isTwoLine: true,
               leading: const CircleAvatar(
-                backgroundImage: NetworkImage(
-                  'https://source.unsplash.com/yeVtxxPxzbw/100x100',
-                ),
+                backgroundImage: NetworkImage('https://source.unsplash.com/yeVtxxPxzbw/100x100'),
               ),
             );
           },
@@ -45,31 +44,22 @@ class _FeaturesMultiChipsState extends State<FeaturesMultiChips> {
         const Divider(indent: 20),
         SmartSelect<String>.multiple(
           title: 'Smartphones',
-          selectedValue: _smartphone,
-          onChange: (selected) {
-            setState(() => _smartphone = selected.value);
-          },
+          value: _smartphone,
+          onChange: (state) => setState(() => _smartphone = state.value),
           choiceType: S2ChoiceType.chips,
           choiceItems: S2Choice.listFrom<String, Map>(
             source: choices.smartphones,
             value: (index, item) => item['id'],
             title: (index, item) => item['name'],
           ),
-          choiceStyle: S2ChoiceStyle(outlined: true),
-          choiceActiveStyle: S2ChoiceStyle(outlined: true),
-          modalConfig: S2ModalConfig(
-            type: S2ModalType.bottomSheet,
-            useFilter: true,
-            maxHeightFactor: .7,
-          ),
+          modalType: S2ModalType.bottomSheet,
+          modalFilter: true,
           tileBuilder: (context, state) {
             return S2Tile.fromState(
               state,
               isTwoLine: true,
               leading: const CircleAvatar(
-                backgroundImage: NetworkImage(
-                  'https://source.unsplash.com/xsGxhtAsfSA/100x100',
-                ),
+                backgroundImage: NetworkImage('https://source.unsplash.com/xsGxhtAsfSA/100x100'),
               ),
             );
           },
@@ -77,21 +67,14 @@ class _FeaturesMultiChipsState extends State<FeaturesMultiChips> {
         const Divider(indent: 20),
         SmartSelect<String>.multiple(
           title: 'Days',
-          selectedValue: _day,
-          onChange: (selected) => setState(() => _day = selected.value),
+          value: _day,
+          onChange: (state) => setState(() => _day = state.value),
           choiceItems: choices.days,
           choiceType: S2ChoiceType.chips,
-          choiceStyle: S2ChoiceStyle(
-            outlined: true,
-          ),
-          choiceActiveStyle: S2ChoiceStyle(
-            raised: true,
-          ),
           modalType: S2ModalType.popupDialog,
           tileBuilder: (context, state) {
             return S2Tile.fromState(
               state,
-              isTwoLine: true,
               leading: Container(
                 width: 40,
                 alignment: Alignment.center,

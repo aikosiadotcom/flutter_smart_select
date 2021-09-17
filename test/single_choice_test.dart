@@ -1,192 +1,54 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:smart_select/smart_select.dart';
-import 'choices.dart' as choices;
 
 void main() {
-  testSmartSelect(
-    title: 'Full page modal, default tile and radio choices displayed correctly',
-    initialChoice: null,
-    choiceToSelect: choices.days[3],
-    choiceItems: choices.days,
-    modalType: S2ModalType.fullPage,
-    choiceType: S2ChoiceType.radios,
-  );
 
-  testSmartSelect(
-    title: 'Bottomsheet modal, default tile and chips choices displayed correctly',
-    placeholder: 'Pilih Salah Satu',
-    initialChoice: null,
-    choiceToSelect: choices.heroes[2],
-    choiceItems: choices.heroes,
-    modalType: S2ModalType.popupDialog,
-    choiceType: S2ChoiceType.chips,
-  );
+  String value;
+  List<S2Choice<String>> choices = [
+    S2Choice<String>(value: 'mon', title: 'Monday'),
+    S2Choice<String>(value: 'tue', title: 'Tuesday'),
+    S2Choice<String>(value: 'wed', title: 'Wednesday'),
+    S2Choice<String>(value: 'thu', title: 'Thursday'),
+    S2Choice<String>(value: 'fri', title: 'Friday'),
+    S2Choice<String>(value: 'sat', title: 'Saturday'),
+    S2Choice<String>(value: 'sun', title: 'Sunday'),
+  ];
 
-  testSmartSelect(
-    title: 'Popup dialog modal, default tile and switch choices displayed correctly',
-    initialChoice: choices.frameworks[0],
-    choiceToSelect: choices.frameworks[1],
-    choiceItems: choices.frameworks,
-    modalType: S2ModalType.popupDialog,
-    choiceType: S2ChoiceType.switches,
-  );
-}
+  setUp(() {
+    value = null;
+  });
 
-testSmartSelect<T>({
-  @required String title,
-  @required S2Choice<T> initialChoice,
-  @required S2Choice<T> choiceToSelect,
-  @required List<S2Choice<T>> choiceItems,
-  S2ModalType modalType = S2ModalType.fullPage,
-  S2ChoiceType choiceType,
-  String placeholder = 'Select one',
-}) {
-  S2Choice<T> selectedChoice = initialChoice;
-
-  testWidgets(title, (WidgetTester tester) async {
-    await tester.pumpWidget(
-      Bootstrap(
-        child: SmartSelect<T>.single(
-          title: title,
-          placeholder: placeholder,
-          selectedValue: selectedChoice?.value,
-          choiceItems: choiceItems,
-          modalType: modalType,
-          choiceType: choiceType,
-          onChange: (selected) => selectedChoice = selected.choice,
-        ),
-      ),
+  testWidgets('Default tile, modal and input displayed correctly', (WidgetTester tester) async {
+    final s2Widget = SmartSelect<String>.single(
+      title: 'Days',
+      value: value,
+      choiceItems: choices,
+      onChange: (state) => value = state.value,
     );
+
+    await tester.pumpWidget(Bootstrap(child: s2Widget));
     await tester.pumpAndSettle();
 
-    final s2Finder = find.byWidgetPredicate((widget) {
-      return widget is SmartSelect<T>;
-    });
-    expect(
-      s2Finder,
-      findsOneWidget,
-      reason: 'SmartSelect widget is displayed',
-    );
+    final s2Finder = find.byWidget(s2Widget);
+    expect(s2Finder, findsOneWidget);
 
-    final s2State = tester.state<S2SingleState<T>>(s2Finder);
-    expect(
-      s2State.selected.choice,
-      initialChoice,
-      reason: 'Initial choice is correct',
-    );
-    expect(
-      s2State.selected.value,
-      initialChoice?.value,
-      reason: 'Initial value is correct',
-    );
+    final S2SingleState<String> s2State = tester.state<S2SingleState<String>>(s2Finder);
+    expect(s2State.value, null);
 
-    final tileFinder = find.descendant(
-      of: s2Finder,
-      matching: find.byWidgetPredicate((widget) => widget is S2Tile<T>),
-    );
-    expect(tileFinder, findsOneWidget, reason: 'Trigger tile displayed');
+    // expect the tile displayed correctly
+    final tileTitleFinder = find.descendant(of: s2Finder, matching: find.text('Days'));
+    final tileValueFinder = find.descendant(of: s2Finder, matching: find.text('Select one'));
+    expect(tileTitleFinder, findsOneWidget);
+    expect(tileValueFinder, findsOneWidget);
 
-    final tileTitleFinder = find.descendant(
-      of: s2Finder,
-      matching: find.text(title),
-    );
-    expect(
-      tileTitleFinder,
-      findsOneWidget,
-      reason: 'Tile title displayed',
-    );
+    // // Tap the widget
+    // await tester.tap(tileTitleFinder);
+    // // Rebuild the widget after the state has changed.
+    // await tester.pump();
 
-    final tileValueFinder = find.descendant(
-      of: s2Finder,
-      matching: find.text(initialChoice?.title ?? placeholder),
-    );
-    expect(
-      tileValueFinder,
-      findsOneWidget,
-      reason: 'Tile value displayed',
-    );
-
-    // Open the choice modal
-    await tester.tap(tileFinder);
-    // Rebuild the widget after the state has changed.
-    await tester.pumpAndSettle();
-
-    final modalFinder = find.byWidgetPredicate((widget) {
-      if (modalType == S2ModalType.popupDialog)
-        return widget is Dialog;
-      else if (modalType == S2ModalType.bottomSheet)
-        return widget is BottomSheet;
-      else
-        return widget is Scaffold;
-    });
-    expect(
-      modalFinder,
-      findsOneWidget,
-      reason: 'Modal displayed',
-    );
-
-    final choiceWrapperFinder = find.byWidgetPredicate((widget) {
-      if (choiceType == S2ChoiceType.chips)
-        return widget is Wrap;
-      else
-        return widget is ListView;
-    });
-    expect(
-      choiceWrapperFinder,
-      findsOneWidget,
-      reason: 'Choice items wrapper displayed',
-    );
-
-    final choiceItemsFinder = find.byWidgetPredicate((widget) {
-      if (choiceType == S2ChoiceType.radios)
-        return widget is RadioListTile<T>;
-      else if (choiceType == S2ChoiceType.chips)
-        return widget is RawChip;
-      else if (choiceType == S2ChoiceType.switches)
-        return widget is SwitchListTile;
-      else
-        return widget is Card;
-    });
-    expect(
-      choiceItemsFinder,
-      findsNWidgets(choiceItems.length),
-      reason: 'List of choice items displayed',
-    );
-
-    final choiceToSelectFinder = find.byKey(ValueKey(choiceToSelect.value));
-    expect(
-      choiceToSelectFinder,
-      findsOneWidget,
-      reason: 'Choice to select displayed',
-    );
-
-    // Select a choice
-    await tester.tap(choiceToSelectFinder);
-    // Rebuild the widget after the state has changed.
-    await tester.pumpAndSettle();
-
-    expect(
-      s2State.selected.choice,
-      choiceToSelect,
-      reason: 'New selected choice to internal choice is correct',
-    );
-    expect(
-      selectedChoice,
-      choiceToSelect,
-      reason: 'New selected choice to external choice is correct',
-    );
-
-    expect(
-      s2State.selected.value,
-      choiceToSelect.value,
-      reason: 'New selected value to internal value is correct',
-    );
-    expect(
-      selectedChoice.value,
-      choiceToSelect.value,
-      reason: 'New selected value to external value is correct',
-    );
+    // final listViewFinder = find.byType(ListView);
+    // expect(listViewFinder, findsOneWidget, reason: 'List of items displayed');
   });
 }
 

@@ -12,6 +12,7 @@ import '../features_header.dart';
 import '../keep_alive.dart';
 
 class FeaturesModal extends StatelessWidget {
+
   @override
   Widget build(BuildContext context) {
     return Scrollbar(
@@ -56,15 +57,13 @@ class FeaturesModal extends StatelessWidget {
           ),
           KeepAliveWidget(
             child: StickyHeader(
-              header:
-                  const FeaturesHeader('Custom Modal Header & Footer Widget'),
+              header: const FeaturesHeader('Custom Modal Header & Footer Widget'),
               content: FeaturesModalWidget(),
             ),
           ),
           KeepAliveWidget(
             child: StickyHeader(
-              header:
-                  const FeaturesHeader('Only Choices, Without Header & Footer'),
+              header: const FeaturesHeader('Only Choices, Without Header & Footer'),
               content: FeaturesModalChoices(),
             ),
           ),
@@ -73,3 +72,4 @@ class FeaturesModal extends StatelessWidget {
     );
   }
 }
+

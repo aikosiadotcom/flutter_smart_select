@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 class IconBadge extends StatelessWidget {
+
   final Icon icon;
   final int counter;
   final Color color;

@@ -8,6 +8,7 @@ class FeaturesMultiSwitches extends StatefulWidget {
 }
 
 class _FeaturesMultiSwitchesState extends State<FeaturesMultiSwitches> {
+
   List<String> _car = [];
   List<String> _smartphone = [];
   List<String> _days = [];
@@ -19,8 +20,8 @@ class _FeaturesMultiSwitchesState extends State<FeaturesMultiSwitches> {
         const SizedBox(height: 7),
         SmartSelect<String>.multiple(
           title: 'Car',
-          selectedValue: _car,
-          onChange: (selected) => setState(() => _car = selected.value),
+          value: _car,
+          onChange: (state) => setState(() => _car = state.value),
           choiceItems: S2Choice.listFrom<String, Map>(
             source: choices.cars,
             value: (index, item) => item['value'],
@@ -35,9 +36,7 @@ class _FeaturesMultiSwitchesState extends State<FeaturesMultiSwitches> {
               state,
               isTwoLine: true,
               leading: const CircleAvatar(
-                backgroundImage: NetworkImage(
-                  'https://source.unsplash.com/yeVtxxPxzbw/100x100',
-                ),
+                backgroundImage: NetworkImage('https://source.unsplash.com/yeVtxxPxzbw/100x100'),
               ),
             );
           },
@@ -45,10 +44,8 @@ class _FeaturesMultiSwitchesState extends State<FeaturesMultiSwitches> {
         const Divider(indent: 20),
         SmartSelect<String>.multiple(
           title: 'Smartphones',
-          selectedValue: _smartphone,
-          onChange: (selected) {
-            setState(() => _smartphone = selected.value);
-          },
+          value: _smartphone,
+          onChange: (state) => setState(() => _smartphone = state.value),
           choiceType: S2ChoiceType.switches,
           choiceItems: S2Choice.listFrom<String, Map>(
             source: choices.smartphones,
@@ -62,9 +59,7 @@ class _FeaturesMultiSwitchesState extends State<FeaturesMultiSwitches> {
               state,
               isTwoLine: true,
               leading: const CircleAvatar(
-                backgroundImage: NetworkImage(
-                  'https://source.unsplash.com/xsGxhtAsfSA/100x100',
-                ),
+                backgroundImage: NetworkImage('https://source.unsplash.com/xsGxhtAsfSA/100x100'),
               ),
             );
           },
@@ -72,8 +67,8 @@ class _FeaturesMultiSwitchesState extends State<FeaturesMultiSwitches> {
         const Divider(indent: 20),
         SmartSelect<String>.multiple(
           title: 'Days',
-          selectedValue: _days,
-          onChange: (selected) => setState(() => _days = selected.value),
+          value: _days,
+          onChange: (state) => setState(() => _days = state.value),
           choiceItems: choices.days,
           choiceType: S2ChoiceType.switches,
           modalType: S2ModalType.popupDialog,

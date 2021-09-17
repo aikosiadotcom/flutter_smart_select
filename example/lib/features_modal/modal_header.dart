@@ -9,6 +9,7 @@ class FeaturesModalHeader extends StatefulWidget {
 }
 
 class _FeaturesModalHeaderState extends State<FeaturesModalHeader> {
+
   List<String> _month = ['apr'];
   String _framework = 'flu';
   List<String> _hero = ['bat', 'spi'];
@@ -20,10 +21,12 @@ class _FeaturesModalHeaderState extends State<FeaturesModalHeader> {
         const SizedBox(height: 7),
         SmartSelect<String>.multiple(
           title: 'Month',
-          selectedValue: _month,
-          onChange: (selected) => setState(() => _month = selected.value),
+          value: _month,
+          onChange: (state) => setState(() => _month = state.value),
           choiceItems: choices.months,
-          choiceActiveStyle: const S2ChoiceStyle(color: Colors.red),
+          choiceStyle: S2ChoiceStyle(
+            activeColor: Colors.red
+          ),
           modalFilter: true,
           modalHeaderStyle: const S2ModalHeaderStyle(
             elevation: 4,
@@ -39,24 +42,21 @@ class _FeaturesModalHeaderState extends State<FeaturesModalHeader> {
               isTwoLine: true,
               leading: IconBadge(
                 icon: const Icon(Icons.calendar_today),
-                counter: state.selected.length,
+                counter: state.value.length,
               ),
             );
-          },
+          }
         ),
         const Divider(indent: 20),
         SmartSelect<String>.single(
           title: 'Frameworks',
-          selectedValue: _framework,
-          onChange: (selected) {
-            setState(() => _framework = selected.value);
-          },
+          value: _framework,
+          onChange: (state) => setState(() => _framework = state.value),
           choiceItems: choices.frameworks,
           modalConfig: S2ModalConfig(
             type: S2ModalType.popupDialog,
             headerStyle: S2ModalHeaderStyle(
-              backgroundColor: Theme.of(context).primaryColor,
-              textStyle: Theme.of(context).primaryTextTheme.headline6,
+              backgroundColor: Colors.blueGrey[50],
               centerTitle: true,
               elevation: 0,
             ),
@@ -66,61 +66,35 @@ class _FeaturesModalHeaderState extends State<FeaturesModalHeader> {
               state,
               isTwoLine: true,
               leading: CircleAvatar(
+                backgroundColor: Colors.blue,
                 child: Text(
-                  '${state.selected.toString()[0]}',
-                  style: TextStyle(color: Colors.white),
+                  '${state.valueDisplay[0]}',
+                  style: TextStyle(color: Colors.white)
                 ),
               ),
             );
-          },
+          }
         ),
         const Divider(indent: 20),
         SmartSelect<String>.multiple(
           title: 'Super Hero',
-          selectedValue: _hero,
-          onChange: (selected) => setState(() => _hero = selected.value),
+          value: _hero,
+          onChange: (state) => setState(() => _hero = state.value),
           choiceItems: choices.heroes,
           modalType: S2ModalType.bottomSheet,
-          modalStyle: S2ModalStyle(
-            clipBehavior: Clip.antiAlias,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(45.0),
-                topRight: Radius.circular(45.0),
-              ),
-            ),
+          modalFilter: true,
+          modalHeaderStyle: const S2ModalHeaderStyle(
+            centerTitle: true,
           ),
-          modalHeaderBuilder: (context, state) {
-            return Column(
-              children: [
-                Container(
-                  height: 5,
-                  width: 30,
-                  decoration: BoxDecoration(
-                    color: Colors.grey[300],
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  margin: EdgeInsets.only(
-                    top: 15,
-                    bottom: 10,
-                  ),
-                ),
-                state.modalTitle,
-                SizedBox(height: 15),
-              ],
-            );
-          },
           tileBuilder: (context, state) {
             return S2Tile.fromState(
               state,
               isTwoLine: true,
               leading: const CircleAvatar(
-                backgroundImage: NetworkImage(
-                  'https://source.unsplash.com/8I-ht65iRww/100x100',
-                ),
+                backgroundImage: NetworkImage('https://source.unsplash.com/8I-ht65iRww/100x100'),
               ),
             );
-          },
+          }
         ),
         const SizedBox(height: 7),
       ],

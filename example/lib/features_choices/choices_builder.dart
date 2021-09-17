@@ -9,13 +9,12 @@ class FeaturesChoicesBuilder extends StatefulWidget {
 }
 
 class _FeaturesChoicesBuilderState extends State<FeaturesChoicesBuilder> {
+
   int _commute;
 
   List<String> _user;
   List<S2Choice<String>> _users = [];
   bool _usersIsLoading = false;
-
-  ThemeData get theme => Theme.of(context);
 
   @override
   Widget build(BuildContext context) {
@@ -25,8 +24,8 @@ class _FeaturesChoicesBuilderState extends State<FeaturesChoicesBuilder> {
         SmartSelect<int>.single(
           title: 'Transportation',
           placeholder: 'Choose one',
-          selectedValue: _commute,
-          onChange: (selected) => setState(() => _commute = selected.value),
+          value: _commute,
+          onChange: (state) => setState(() => _commute = state.value),
           modalType: S2ModalType.bottomSheet,
           modalHeader: false,
           choiceItems: S2Choice.listFrom<int, Map<String, dynamic>>(
@@ -38,10 +37,10 @@ class _FeaturesChoicesBuilderState extends State<FeaturesChoicesBuilder> {
           ),
           choiceLayout: S2ChoiceLayout.wrap,
           choiceDirection: Axis.horizontal,
-          choiceBuilder: (context, state, choice) {
+          choiceBuilder: (context, choice, query) {
             return Card(
               margin: const EdgeInsets.fromLTRB(0, 5, 0, 5),
-              color: choice.selected ? theme.primaryColor : theme.cardColor,
+              color: choice.selected ? Colors.blue : Colors.white,
               child: InkWell(
                 onTap: () => choice.select(true),
                 child: SizedBox(
@@ -53,18 +52,16 @@ class _FeaturesChoicesBuilderState extends State<FeaturesChoicesBuilder> {
                       children: <Widget>[
                         CircleAvatar(
                           backgroundImage: NetworkImage(choice.meta['image']),
-                          child: choice.selected
-                              ? Icon(
-                                  Icons.check,
-                                  color: Colors.white,
-                                )
-                              : null,
+                          child: choice.selected ? Icon(
+                            Icons.check,
+                            color: Colors.white,
+                          ) : null,
                         ),
                         const SizedBox(height: 5),
                         Text(
                           choice.title,
                           style: TextStyle(
-                            color: choice.selected ? Colors.white : null,
+                            color: choice.selected ? Colors.white : Colors.black87,
                           ),
                         ),
                       ],
@@ -75,8 +72,7 @@ class _FeaturesChoicesBuilderState extends State<FeaturesChoicesBuilder> {
             );
           },
           tileBuilder: (context, state) {
-            String avatar = (state.selected?.choice?.meta ?? {})['image'] ??
-                'https://source.unsplash.com/3k5cAmxjXl4/100x100';
+            String avatar = (state.valueObject?.meta ?? {})['image'] ?? 'https://source.unsplash.com/3k5cAmxjXl4/100x100';
             return S2Tile.fromState(
               state,
               isTwoLine: true,
@@ -89,8 +85,8 @@ class _FeaturesChoicesBuilderState extends State<FeaturesChoicesBuilder> {
         const Divider(indent: 20),
         SmartSelect<String>.multiple(
           title: 'Passengers',
-          selectedValue: _user,
-          onChange: (selected) => setState(() => _user = selected.value),
+          value: _user,
+          onChange: (state) => setState(() => _user = state.value),
           modalFilter: true,
           choiceItems: _users,
           choiceGrouped: true,
@@ -98,11 +94,11 @@ class _FeaturesChoicesBuilderState extends State<FeaturesChoicesBuilder> {
           choiceGrid: const SliverGridDelegateWithFixedCrossAxisCount(
             mainAxisSpacing: 5,
             crossAxisSpacing: 5,
-            crossAxisCount: 3,
+            crossAxisCount: 3
           ),
-          choiceBuilder: (context, state, choice) {
+          choiceBuilder: (context, choice, query) {
             return Card(
-              color: choice.selected ? theme.primaryColor : theme.cardColor,
+              color: choice.selected ? Colors.green : Colors.white,
               child: InkWell(
                 onTap: () => choice.select(!choice.selected),
                 child: Container(
@@ -116,19 +112,17 @@ class _FeaturesChoicesBuilderState extends State<FeaturesChoicesBuilder> {
                         width: 50,
                         height: 50,
                         child: CircleAvatar(
-                          backgroundImage: NetworkImage(
-                            choice.meta['picture']['thumbnail'],
-                          ),
+                          backgroundImage: NetworkImage(choice.meta['picture']['thumbnail']),
                         ),
                       ),
-                      const SizedBox(height: 5),
+                      SizedBox(height: 5),
                       Text(
                         choice.title,
                         textAlign: TextAlign.center,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
-                          color: choice.selected ? Colors.white : null,
+                          color: choice.selected ? Colors.white : Colors.black87,
                           height: 1,
                         ),
                       )
@@ -143,31 +137,41 @@ class _FeaturesChoicesBuilderState extends State<FeaturesChoicesBuilder> {
               state,
               isLoading: _usersIsLoading,
               hideValue: true,
-              leading: CircleAvatar(
-                backgroundColor: theme.primaryColor,
-                child: Text(
-                  state.selected.value?.length?.toString() ?? '0',
-                  style: TextStyle(color: Colors.white),
-                ),
-              ),
               body: S2TileChips(
-                chipLength: state.selected.length,
+                chipLength: state.valueObject.length,
                 chipLabelBuilder: (context, i) {
-                  return Text(state.selected.choice[i].title);
+                  return Text(state.valueObject[i].title);
                 },
                 chipAvatarBuilder: (context, i) => CircleAvatar(
-                  backgroundImage: NetworkImage(
-                    state.selected.choice[i].meta['picture']['thumbnail'],
-                  ),
+                  backgroundImage: NetworkImage(state.valueObject[i].meta['picture']['thumbnail'])
                 ),
                 chipOnDelete: (i) {
-                  setState(() => _user.remove(state.selected.choice[i].value));
+                  setState(() => _user.remove(state.valueObject[i].value));
                 },
-                chipColor: Theme.of(context).primaryColor,
-                chipRaised: true,
+                chipColor: Colors.blue,
+                chipBrightness: Brightness.dark,
+                chipBorderOpacity: .5,
                 placeholder: Container(),
               ),
             );
+            // return S2ChipsTile<String>.fromState(
+            //   state,
+            //   trailing: _usersIsLoading == true
+            //     ? const CircularProgressIndicator(
+            //         valueColor: AlwaysStoppedAnimation<Color>(Colors.grey),
+            //         strokeWidth: 1.5,
+            //       )
+            //     : const Icon(Icons.add_circle_outline),
+            //   chipColor: Colors.blue,
+            //   chipBorderOpacity: .5,
+            //   chipBrightness: Brightness.light,
+            //   chipAvatarBuilder: (context, i) => CircleAvatar(
+            //     backgroundImage: NetworkImage(state.valueObject[i].meta['picture']['thumbnail'])
+            //   ),
+            //   chipOnDelete: (value) {
+            //     setState(() => _user.remove(value));
+            //   },
+            // );
           },
         ),
         const SizedBox(height: 7),
@@ -185,20 +189,16 @@ class _FeaturesChoicesBuilderState extends State<FeaturesChoicesBuilder> {
   void _getUsers() async {
     try {
       setState(() => _usersIsLoading = true);
-      String url =
-          "https://randomuser.me/api/?inc=gender,name,nat,picture,email&results=25";
+      String url = "https://randomuser.me/api/?inc=gender,name,nat,picture,email&results=25";
       Response res = await Dio().get(url);
-      setState(() {
-        _users = S2Choice.listFrom<String, dynamic>(
-          source: res.data['results'],
-          value: (index, item) => item['email'],
-          title: (index, item) =>
-              item['name']['first'] + ' ' + item['name']['last'],
-          subtitle: (index, item) => item['email'],
-          group: (index, item) => item['gender'],
-          meta: (index, item) => item,
-        );
-      });
+      setState(() => _users = S2Choice.listFrom<String, dynamic>(
+        source: res.data['results'],
+        value: (index, item) => item['email'],
+        title: (index, item) => item['name']['first'] + ' ' + item['name']['last'],
+        subtitle: (index, item) => item['email'],
+        group: (index, item) => item['gender'],
+        meta: (index, item) => item,
+      ));
     } catch (e) {
       print(e);
     } finally {

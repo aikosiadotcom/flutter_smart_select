@@ -1,10 +1,9 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'dart:ui';
 
 /// Configure modal style
-@immutable
-class S2ModalStyle with Diagnosticable {
+class S2ModalStyle {
+
   /// Modal border shape
   /// used in popup dialog and bottom sheet
   final ShapeBorder shape;
@@ -59,8 +58,8 @@ class S2ModalStyle with Diagnosticable {
 }
 
 /// Configure modal option header style
-@immutable
-class S2ModalHeaderStyle with Diagnosticable {
+class S2ModalHeaderStyle {
+
   /// Header border shape
   final ShapeBorder shape;
 
@@ -76,7 +75,7 @@ class S2ModalHeaderStyle with Diagnosticable {
   /// Whether the header title is centered
   final bool centerTitle;
 
-  /// Whether the [automaticallyImplyLeading] is [true] or [false]
+  /// Whether the header use automaticallyImplyLeading or not
   final bool useLeading;
 
   /// Header text style
@@ -98,14 +97,15 @@ class S2ModalHeaderStyle with Diagnosticable {
     this.elevation = 0.5,
     this.useLeading,
     this.centerTitle = false,
-    this.textStyle,
-    this.errorStyle,
-    this.iconTheme,
-    this.actionsIconTheme,
-    this.backgroundColor,
+    this.textStyle = const TextStyle(color: Color(0x8A000000)),
+    this.errorStyle = const TextStyle(color: Color(0xFFF44336), fontSize: 13.5, fontWeight: FontWeight.w500),
+    this.iconTheme = const IconThemeData(color: Color(0x8A000000)),
+    this.actionsIconTheme = const IconThemeData(color: Color(0x8A000000)),
+    this.backgroundColor = const Color(0xFFFFFFFF),
     this.brightness,
-  })  : assert(elevation != null),
-        assert(centerTitle != null);
+  }) :
+    assert(elevation != null),
+    assert(centerTitle != null);
 
   /// Creates a copy of this [S2ModalHeaderStyle] but with
   /// the given fields replaced with the new values.
@@ -128,11 +128,10 @@ class S2ModalHeaderStyle with Diagnosticable {
       brightness: brightness ?? this.brightness,
       useLeading: useLeading ?? this.useLeading,
       centerTitle: centerTitle ?? this.centerTitle,
-      textStyle: this.textStyle?.merge(textStyle) ?? textStyle,
-      errorStyle: this.errorStyle?.merge(errorStyle) ?? errorStyle,
-      iconTheme: this.iconTheme?.merge(iconTheme) ?? iconTheme,
-      actionsIconTheme:
-          this.actionsIconTheme?.merge(actionsIconTheme) ?? actionsIconTheme,
+      textStyle: textStyle ?? this.textStyle,
+      errorStyle: errorStyle ?? this.errorStyle,
+      iconTheme: iconTheme ?? this.iconTheme,
+      actionsIconTheme: actionsIconTheme ?? this.actionsIconTheme,
     );
   }
 

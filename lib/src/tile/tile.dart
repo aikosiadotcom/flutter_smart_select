@@ -4,7 +4,7 @@ import '../widget.dart';
 /// Default trigger/tile widget
 class S2Tile<T> extends StatelessWidget {
   /// The value of the selected option.
-  final Widget value;
+  final String value;
 
   /// Called when the user taps this list tile.
   ///
@@ -33,17 +33,8 @@ class S2Tile<T> extends StatelessWidget {
   /// Whether this list tile is intended to display loading stats.
   final bool isLoading;
 
-  /// String text used as loading text
+  // String text used as loading text
   final String loadingText;
-
-  /// Widget used as loading message
-  final Widget loadingMessage;
-
-  /// Widget used as loading indicator
-  final Widget loadingIndicator;
-
-  /// Whether this list tile is intended to display error widget.
-  final bool isError;
 
   /// Whether this list tile is intended to display two lines of text.
   final bool isTwoLine;
@@ -91,11 +82,8 @@ class S2Tile<T> extends StatelessWidget {
     @required this.title,
     this.leading,
     this.trailing,
-    this.loadingText,
-    this.loadingMessage,
-    this.loadingIndicator,
+    this.loadingText = 'Loading..',
     this.isLoading = false,
-    this.isError = false,
     this.isTwoLine = false,
     this.enabled = true,
     this.selected = false,
@@ -109,16 +97,13 @@ class S2Tile<T> extends StatelessWidget {
   S2Tile.fromState(
     S2State<T> state, {
     Key key,
-    Widget value,
+    String value,
     GestureTapCallback onTap,
     Widget title,
-    bool isError,
-    bool isLoading,
     this.leading,
     this.trailing,
-    this.loadingText,
-    this.loadingMessage,
-    this.loadingIndicator,
+    this.loadingText = 'Loading..',
+    this.isLoading = false,
     this.isTwoLine = false,
     this.enabled = true,
     this.selected = false,
@@ -127,30 +112,21 @@ class S2Tile<T> extends StatelessWidget {
     this.padding,
     this.body,
   })  : title = title ?? state.titleWidget,
-        value = value ?? Text(state.selected.toString()),
+        value = value ?? state.valueDisplay,
         onTap = onTap ?? state.showModal,
-        isLoading = isLoading ?? state.selected.isResolving,
-        isError = isError ?? state.selected.isNotValid,
         super(key: key);
-
-  /// Returns default trailing widget
-  static const Widget defaultTrailing = const Icon(
-    Icons.keyboard_arrow_right,
-    color: Colors.grey,
-  );
-
-  /// Returns default loading indicator widget
-  static const Widget defaultLoadingIndicator = const SizedBox(
-    child: CircularProgressIndicator(
-      strokeWidth: 1.5,
-    ),
-    height: 16.0,
-    width: 16.0,
-  );
 
   @override
   Widget build(BuildContext context) {
-    return body == null ? _tileWidget : _tileWithBodyWidget;
+    return body == null
+        ? _tileWidget
+        : Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              _tileWidget,
+              body,
+            ],
+          );
   }
 
   Widget get _tileWidget {
@@ -167,16 +143,6 @@ class S2Tile<T> extends StatelessWidget {
     );
   }
 
-  Widget get _tileWithBodyWidget {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        _tileWidget,
-        body,
-      ],
-    );
-  }
-
   Widget get _trailingWidget {
     return isTwoLine != true && hideValue != true
         ? Container(
@@ -184,7 +150,7 @@ class S2Tile<T> extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 Container(
-                  constraints: const BoxConstraints(maxWidth: 100),
+                  constraints: const BoxConstraints(maxWidth: 200),
                   child: _valueWidget,
                 ),
                 Padding(
@@ -201,26 +167,23 @@ class S2Tile<T> extends StatelessWidget {
     return isLoading != true
         ? trailing != null
             ? trailing
-            : S2Tile.defaultTrailing
-        : S2Tile.defaultLoadingIndicator;
-  }
-
-  Widget get _loadingWidget {
-    return loadingMessage ?? Text(loadingText ?? 'Loading..');
+            : const Icon(Icons.keyboard_arrow_right, color: Colors.grey)
+        : const SizedBox(
+            child: CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(Colors.black45),
+              strokeWidth: 1.5,
+            ),
+            height: 16.0,
+            width: 16.0,
+          );
   }
 
   Widget get _valueWidget {
-    return Builder(
-      builder: (context) {
-        return DefaultTextStyle.merge(
-          child: isLoading == true ? _loadingWidget : value,
-          style: isError == true
-              ? TextStyle(color: Theme.of(context).errorColor)
-              : null,
-          overflow: TextOverflow.ellipsis,
-          maxLines: 1,
-        );
-      },
+    return Text(
+      isLoading ? loadingText : value,
+      style: const TextStyle(color: Colors.grey),
+      // overflow: TextOverflow.ellipsis,
+      // maxLines: 1,
     );
   }
 }

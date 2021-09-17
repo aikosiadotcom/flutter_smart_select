@@ -9,12 +9,11 @@ class FeaturesTileLeading extends StatefulWidget {
 }
 
 class _FeaturesTileLeadingState extends State<FeaturesTileLeading> {
+
   String _day = 'fri';
   List<String> _month = ['apr'];
   String _framework = 'flu';
   List<String> _hero = ['bat', 'spi'];
-
-  Color get primaryColor => Theme.of(context).primaryColor;
 
   @override
   Widget build(BuildContext context) {
@@ -23,9 +22,9 @@ class _FeaturesTileLeadingState extends State<FeaturesTileLeading> {
         const SizedBox(height: 7),
         SmartSelect<String>.single(
           title: 'Days',
-          selectedValue: _day,
+          value: _day,
           choiceItems: choices.days,
-          onChange: (selected) => setState(() => _day = selected.value),
+          onChange: (state) => setState(() => _day = state.value),
           tileBuilder: (context, state) {
             return S2Tile.fromState(
               state,
@@ -36,9 +35,9 @@ class _FeaturesTileLeadingState extends State<FeaturesTileLeading> {
         const Divider(indent: 20),
         SmartSelect<String>.multiple(
           title: 'Month',
-          selectedValue: _month,
+          value: _month,
           choiceItems: choices.months,
-          onChange: (selected) => setState(() => _month = selected.value),
+          onChange: (state) => setState(() => _month = state.value),
           tileBuilder: (context, state) {
             return S2Tile.fromState(
               state,
@@ -53,20 +52,18 @@ class _FeaturesTileLeadingState extends State<FeaturesTileLeading> {
         const Divider(indent: 20),
         SmartSelect<String>.single(
           title: 'Frameworks',
-          selectedValue: _framework,
+          value: _framework,
           choiceItems: choices.frameworks,
-          onChange: (selected) {
-            setState(() => _framework = selected.value);
-          },
+          onChange: (state) => setState(() => _framework = state.value),
           modalType: S2ModalType.popupDialog,
           tileBuilder: (context, state) {
             return S2Tile.fromState(
               state,
               leading: CircleAvatar(
-                backgroundColor: primaryColor,
+                backgroundColor: Colors.blue,
                 child: Text(
-                  '${state.selected.toString()[0]}',
-                  style: TextStyle(color: Colors.white),
+                  '${state.valueDisplay[0]}',
+                  style: TextStyle(color: Colors.white)
                 ),
               ),
             );
@@ -75,9 +72,9 @@ class _FeaturesTileLeadingState extends State<FeaturesTileLeading> {
         const Divider(indent: 20),
         SmartSelect<String>.multiple(
           title: 'Super Hero',
-          selectedValue: _hero,
+          value: _hero,
           choiceItems: choices.heroes,
-          onChange: (selected) => setState(() => _hero = selected.value),
+          onChange: (state) => setState(() => _hero = state.value),
           modalType: S2ModalType.bottomSheet,
           modalFilter: true,
           tileBuilder: (context, state) {
@@ -85,9 +82,7 @@ class _FeaturesTileLeadingState extends State<FeaturesTileLeading> {
               state,
               isTwoLine: true,
               leading: const CircleAvatar(
-                backgroundImage: NetworkImage(
-                  'https://source.unsplash.com/8I-ht65iRww/100x100',
-                ),
+                backgroundImage: NetworkImage('https://source.unsplash.com/8I-ht65iRww/100x100'),
               ),
             );
           },
